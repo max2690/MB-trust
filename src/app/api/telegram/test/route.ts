@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
     const result = await sendVerificationCode(telegramId, code, 'admin');
 
     return NextResponse.json({
-      success: result.success,
-      message: result.success ? 'Код отправлен успешно' : 'Ошибка отправки',
-      error: result.error
+      success: !!result && !!result.success,
+      message: result && 'success' in result && result.success ? 'Код отправлен успешно' : 'Ошибка отправки',
+      error: result && 'error' in result ? (result as any).error : undefined
     });
 
   } catch (error) {

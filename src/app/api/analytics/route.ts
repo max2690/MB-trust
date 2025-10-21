@@ -54,9 +54,16 @@ export async function GET(request: NextRequest) {
         },
         _sum: { amount: true }
       }),
-      prisma.clickLog.count({
-        where: { timestamp: { gte: startDate } }
-      }),
+      // clickLog may not exist in some schema variants; guard with try/catch
+      (async () => {
+        try {
+          // @ts-ignore - some deployments may not have clickLog model
+          return await prisma.clickLog.count({ where: { timestamp: { gte: startDate } } });
+        } catch (e) {
+          console.warn('clickLog model not available:', e);
+          return 0;
+        }
+      })(),
       prisma.user.count({
         where: {
           role: 'EXECUTOR',

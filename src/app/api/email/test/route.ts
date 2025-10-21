@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
     const result = await sendVerificationEmail(email, code, 'admin');
 
     return NextResponse.json({
-      success: result.success,
-      message: result.success ? 'Email отправлен успешно' : 'Ошибка отправки',
-      error: result.error
+      success: !!result && !!result.success,
+      message: result && 'success' in result && result.success ? 'Email отправлен успешно' : 'Ошибка отправки',
+      error: result && 'error' in result ? (result as any).error : undefined
     });
 
   } catch (error) {

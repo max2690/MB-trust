@@ -170,7 +170,7 @@ export const setupTelegramBot = () => {
   console.log('🤖 Telegram бот отключен (polling и webhook отключены)');
   return;
   
-  bot.on('message', async (msg) => {
+  bot.on('message', async (msg: any) => {
     const chatId = msg.chat.id;
     const text = msg.text;
     
@@ -202,7 +202,7 @@ export const setupTelegramBot = () => {
     }
   });
   
-  bot.on('error', (error) => {
+  bot.on('error', (error: any) => {
     console.error('Ошибка Telegram бота:', error);
   });
   

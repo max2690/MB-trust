@@ -89,7 +89,7 @@ export const sendVerificationEmail = async (email: string, code: string, type: '
     return { success: true };
   } catch (error) {
     console.error('Ошибка отправки email:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: (error as any).message };
   }
 };
 
@@ -158,7 +158,7 @@ export const sendOrderEmail = async (email: string, orderData: any) => {
     return { success: true };
   } catch (error) {
     console.error('Ошибка отправки email о заказе:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: (error as any).message };
   }
 };
 
@@ -223,7 +223,7 @@ export const sendExecutionEmail = async (email: string, executionData: any) => {
     return { success: true };
   } catch (error) {
     console.error('Ошибка отправки email о выполнении:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: (error as any).message };
   }
 };
 
@@ -288,7 +288,7 @@ export const sendBalanceEmail = async (email: string, balance: number, type: 'de
     return { success: true };
   } catch (error) {
     console.error('Ошибка отправки email о балансе:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: (error as any).message };
   }
 };
 

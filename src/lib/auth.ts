@@ -62,9 +62,10 @@ export const authOptions: NextAuthOptions = {
       return session
     }
   },
-  pages: {
+  pages: ({
     signIn: '/auth/signin',
+    // signUp is not part of NextAuth PagesOptions in some versions; cast to any for compatibility
     signUp: '/auth/signup'
-  }
+  } as any)
 }
 

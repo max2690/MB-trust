@@ -81,11 +81,11 @@ export async function PUT(request: NextRequest) {
 
     const payment = await prisma.payment.update({
       where: { id: paymentId },
-      data: {
+      data: ({
         status,
         transactionId,
         processedAt: new Date()
-      }
+      } as any)
     })
 
     // Если платеж успешен, обновляем баланс
