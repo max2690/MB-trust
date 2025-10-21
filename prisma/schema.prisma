@@ -1,0 +1,359 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Пользователи системы
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  phone         String    @unique
+  name          String
+  passwordHash  String
+  country       String
+  region        String
+  role          UserRole  @default(EXECUTOR)
+  level         UserLevel @default(NOVICE)
+  balance       Float     @default(0)
+  isVerified    Boolean   @default(false)
+  isBlocked     Boolean   @default(false)
+  telegramId    String?   @unique  // Telegram ID для верификации
+  rating        Float?    @default(0)  // Рейтинг пользователя
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Связи
+  orders        Order[]
+  executions    Execution[]
+  payments      Payment[]
+  referrals     Referral[] @relation("Referrer")
+  referredBy    Referral? @relation("Referred")
+  dailyLimits   ExecutorDailyLimit[]
+  refunds       Refund[]
+  
+  @@map("users")
+}
+
+// Администраторы системы
+model Admin {
+  id            String    @id @default(cuid())
+  login         String    @unique
+  passwordHash  String
+  name          String
+  role          AdminRole
+  phone         String?   // Для SMS верификации
+  email         String?   // Для email верификации
+  telegramId    String?   @unique  // Telegram ID
+  isActive      Boolean   @default(true)
+  permissions   String?   // JSON строка с правами доступа
+  createdBy     String?   // Кто создал (только для модераторов)
+  createdAt     DateTime  @default(now())
+  lastLogin     DateTime?
+  
+  // Связи
+  creator       Admin?    @relation("AdminCreator", fields: [createdBy], references: [id])
+  createdAdmins Admin[]   @relation("AdminCreator")
+  sessions      AdminSession[]
+  verificationCodes AdminVerificationCode[]
+  
+  @@map("admins")
+}
+
+// Сессии администраторов
+model AdminSession {
+  id            String    @id @default(cuid())
+  adminId       String
+  token         String    @unique
+  smsVerified   Boolean   @default(false)
+  emailVerified Boolean   @default(false)
+  expiresAt     DateTime
+  createdAt     DateTime  @default(now())
+  
+  // Связи
+  admin         Admin     @relation(fields: [adminId], references: [id])
+  
+  @@map("admin_sessions")
+}
+
+// Коды верификации
+model AdminVerificationCode {
+  id            String    @id @default(cuid())
+  adminId       String
+  type          VerificationType
+  code          String
+  expiresAt     DateTime
+  isUsed        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  
+  // Связи
+  admin         Admin     @relation(fields: [adminId], references: [id])
+  
+  @@map("admin_verification_codes")
+}
+
+// Заказы от заказчиков
+model Order {
+  id            String      @id @default(cuid())
+  title         String
+  description   String
+  targetAudience String?
+  budget        Float
+  reward        Float       // Сумма для исполнителя
+  region        String
+  socialNetwork SocialNetwork
+  qrCode        String      @unique
+  qrCodeExpiry  DateTime
+  processedImageUrl String? // URL обработанного изображения с QR кодом
+  qrCodeUrl     String?     // URL отдельного QR кода
+  quantity      Int         @default(1)  // Количество публикаций
+  maxExecutions Int         @default(1)  // Максимум исполнителей
+  completedCount Int        @default(0)  // Выполнено публикаций
+  deadline      DateTime    // Срок выполнения
+  campaignType  CampaignType @default(SINGLE)  // SINGLE, WEEKLY, BIWEEKLY
+  totalQuantity Int         @default(1)  // Общее количество публикаций для кампании
+  dailySchedule Json?       // {"day1": 50, "day2": 200, "day3": 50}
+  autoDistribution Boolean  @default(true)    // Автоматическое распределение
+  refundOnFailure Boolean   @default(true)    // Возврат при невыполнении
+  refundDeadline DateTime?  // Дедлайн для возврата (72 часа после deadline)
+  status        OrderStatus @default(PENDING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Связи
+  customerId    String
+  customer      User        @relation(fields: [customerId], references: [id])
+  executions    Execution[]
+  refunds       Refund[]
+  payments      Payment[]
+  
+  @@map("orders")
+}
+
+// Выполнения заказов исполнителями
+model Execution {
+  id            String           @id @default(cuid())
+  screenshotUrl String?          // URL скриншота
+  notes         String?          // Заметки исполнителя
+  clicks        Int              @default(0)
+  reward        Float            // Сумма вознаграждения
+  status        ExecutionStatus  @default(PENDING)
+  reviewedAt    DateTime?        // Время проверки
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  
+  // Связи
+  orderId       String
+  order         Order            @relation(fields: [orderId], references: [id])
+  executorId    String
+  executor      User             @relation(fields: [executorId], references: [id])
+  
+  @@unique([orderId, executorId]) // Защита от дублирования
+  @@map("executions")
+}
+
+// Платежи и транзакции
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  type          PaymentType
+  status        PaymentStatus @default(PENDING)
+  description   String?       // Описание платежа
+  stripeId      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Связи
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  orderId       String?       // Связь с заказом
+  order         Order?        @relation(fields: [orderId], references: [id])
+  
+  @@map("payments")
+}
+
+// Реферальная система
+model Referral {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  
+  // Связи
+  referrerId    String
+  referrer      User     @relation("Referrer", fields: [referrerId], references: [id])
+  referredId    String   @unique
+  referred      User     @relation("Referred", fields: [referredId], references: [id])
+  
+  @@map("referrals")
+}
+
+// Дневные лимиты исполнителей
+model ExecutorDailyLimit {
+  id            String   @id @default(cuid())
+  date          DateTime // Дата (без времени)
+  executionsCount Int    @default(0) // Количество выполнений за день
+  platformLimits Json?   // Лимиты по площадкам {"INSTAGRAM": 3, "TELEGRAM": 2}
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Связи
+  executorId    String
+  executor      User     @relation(fields: [executorId], references: [id])
+  
+  @@unique([executorId, date]) // Один лимит на исполнителя в день
+  @@map("executor_daily_limits")
+}
+
+// Настройки платформ
+model PlatformSettings {
+  id            String   @id @default(cuid())
+  platform      SocialNetwork
+  basePrice     Float    // Базовая цена за сторис
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([platform])
+  @@map("platform_settings")
+}
+
+// Настройки комиссий по уровням
+model CommissionSettings {
+  id            String   @id @default(cuid())
+  level         UserLevel
+  executorRate  Float    // Процент исполнителю (0.4 = 40%)
+  platformRate  Float    // Процент платформе (0.6 = 60%)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([level])
+  @@map("commission_settings")
+}
+
+// База городов России
+model City {
+  id            String   @id @default(cuid())
+  name          String
+  region        String
+  country       String   @default("Россия")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([name, region])
+  @@map("cities")
+}
+
+// Возвраты денег
+model Refund {
+  id            String   @id @default(cuid())
+  orderId       String
+  customerId    String
+  amount        Float
+  reason        String   // Причина возврата
+  status        RefundStatus @default(PENDING)
+  processedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Связи
+  order         Order    @relation(fields: [orderId], references: [id])
+  customer      User     @relation(fields: [customerId], references: [id])
+  
+  @@map("refunds")
+}
+
+// Система уровней пользователей
+enum UserLevel {
+  NOVICE      // 40% - первые 3 дня, максимум 5 сторис/день
+  VERIFIED    // 50% - 30 дней работы, 10 сторис/день
+  REFERRAL    // 60% - 3 реферала + 100 дней работы
+  TOP         // 80% - 100 выполненных заказов + высокая конверсия
+}
+
+// Роли пользователей
+enum UserRole {
+  CUSTOMER    // Заказчик рекламы
+  EXECUTOR    // Исполнитель (размещает рекламу)
+  MODERATOR_ADMIN  // Модератор-админ
+  SUPER_ADMIN      // Супер-админ (бог)
+}
+
+// Социальные сети
+enum SocialNetwork {
+  INSTAGRAM
+  TIKTOK
+  VK
+  TELEGRAM
+  WHATSAPP
+  FACEBOOK
+}
+
+// Статусы заказов
+enum OrderStatus {
+  PENDING     // Ожидает выполнения
+  IN_PROGRESS // В процессе выполнения
+  COMPLETED   // Выполнен
+  CANCELLED   // Отменен
+}
+
+// Статусы выполнения
+enum ExecutionStatus {
+  PENDING       // Ожидает проверки
+  UPLOADED      // Скриншот загружен
+  PENDING_REVIEW // Ожидает модерации
+  APPROVED      // Одобрено
+  REJECTED      // Отклонено
+  COMPLETED     // Завершено и оплачено
+}
+
+// Типы платежей
+enum PaymentType {
+  DEPOSIT     // Пополнение счета
+  WITHDRAWAL  // Вывод средств
+  COMMISSION  // Комиссия платформы
+}
+
+// Статусы платежей
+enum PaymentStatus {
+  PENDING     // Ожидает обработки
+  PROCESSING  // Обрабатывается
+  COMPLETED   // Завершен
+  FAILED      // Неудачный
+  CANCELLED   // Отменен
+}
+
+// Типы кампаний
+enum CampaignType {
+  SINGLE      // Одиночный заказ
+  WEEKLY      // Недельная кампания
+  BIWEEKLY    // Двухнедельная кампания
+}
+
+// Статусы возвратов
+enum RefundStatus {
+  PENDING     // Ожидает обработки
+  PROCESSING  // Обрабатывается
+  COMPLETED   // Завершен
+  FAILED      // Неудачный
+  CANCELLED   // Отменен
+}
+
+// Роли администраторов
+enum AdminRole {
+  SUPER_ADMIN      // Супер-админ (бог) - полные права
+  MODERATOR_ADMIN  // Модератор-админ - ограниченные права
+}
+
+// Типы верификации
+enum VerificationType {
+  SMS       // SMS верификация
+  EMAIL     // Email верификация
+  TELEGRAM  // Telegram верификация
+}

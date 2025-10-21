@@ -1,0 +1,27 @@
+:root {
+  --mb-black: 11 11 15;        /* #0B0B0F */
+  --mb-white: 245 245 245;     /* #F5F5F5 */
+  --mb-turquoise: 0 255 255;   /* #00FFFF */
+  --mb-gray: 128 128 128;      /* #808080 */
+  --mb-red: 255 0 0;           /* #FF0000 */
+  --mb-gold: 255 215 0;        /* #FFD700 */
+  
+  --mb-input: 20 20 25;        /* #141419 */
+  --mb-card: 15 15 20;         /* #0F0F14 */
+  --mb-border: 30 30 35;       /* #1E1E23 */
+  
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+* {
+  border-color: hsl(var(--mb-border));
+}
+
+body {
+  background-color: hsl(var(--mb-black));
+  color: hsl(var(--mb-white));
+}
+
