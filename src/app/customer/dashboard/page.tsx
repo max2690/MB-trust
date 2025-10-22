@@ -23,9 +23,24 @@ export default function CustomerDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [balance, setBalance] = useState(0);
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [depositAmount, setDepositAmount] = useState(1000);
+  const [conversionStats, setConversionStats] = useState({
+    totalClicks: 0,
+    totalViews: 0,
+    conversionRate: 0,
+    totalSpent: 0
+  });
 
+  // 🚀 КОСТЫЛЬ ДЛЯ ТЕСТИРОВАНИЯ - прямой доступ в dev режиме
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔥 DEV MODE: Прямой доступ к customer dashboard без авторизации');
+    }
     fetchOrders();
+    fetchBalance();
+    fetchConversionStats();
   }, []);
 
   const fetchOrders = async () => {
@@ -39,6 +54,41 @@ export default function CustomerDashboard() {
       console.error('Ошибка загрузки заказов:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBalance = async () => {
+    try {
+      // Заглушка для баланса
+      setBalance(15000); // 15,000 рублей
+    } catch (error) {
+      console.error('Ошибка загрузки баланса:', error);
+    }
+  };
+
+  const fetchConversionStats = async () => {
+    try {
+      // Заглушка для статистики конверсий
+      setConversionStats({
+        totalClicks: 1247,
+        totalViews: 15680,
+        conversionRate: 7.95,
+        totalSpent: 45000
+      });
+    } catch (error) {
+      console.error('Ошибка загрузки статистики:', error);
+    }
+  };
+
+  const handleDeposit = async () => {
+    try {
+      // Заглушка для пополнения
+      setBalance(prev => prev + depositAmount);
+      setShowDepositModal(false);
+      alert(`Баланс пополнен на ${depositAmount}₽`);
+    } catch (error) {
+      console.error('Ошибка пополнения:', error);
+      alert('Ошибка пополнения баланса');
     }
   };
 
@@ -82,7 +132,20 @@ export default function CustomerDashboard() {
     <div className="min-h-screen bg-mb-black">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">Дашборд заказчика</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Дашборд заказчика</h1>
+            <div className="flex items-center space-x-4 mt-2">
+              <div className="text-lg text-mb-turquoise font-semibold">
+                Баланс: {balance.toLocaleString()}₽
+              </div>
+              <Button 
+                onClick={() => setShowDepositModal(true)}
+                className="bg-mb-turquoise hover:bg-mb-turquoise/80 text-mb-black"
+              >
+                💳 Пополнить баланс
+              </Button>
+            </div>
+          </div>
           <div className="flex space-x-4">
             <Link href="/customer/advanced-orders">
               <Button variant="outline">
@@ -132,6 +195,42 @@ export default function CustomerDashboard() {
               {orders.filter(o => o.status === 'COMPLETED').length}
             </h3>
             <p className="text-mb-gray">Завершены</p>
+          </Card>
+        </div>
+
+        {/* Статистика конверсий */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10">
+            <div className="p-6 text-center">
+              <div className="text-2xl font-bold text-mb-turquoise mb-2">
+                {conversionStats.totalClicks.toLocaleString()}
+              </div>
+              <div className="text-mb-gray">Всего кликов</div>
+            </div>
+          </Card>
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10">
+            <div className="p-6 text-center">
+              <div className="text-2xl font-bold text-mb-gold mb-2">
+                {conversionStats.totalViews.toLocaleString()}
+              </div>
+              <div className="text-mb-gray">Всего показов</div>
+            </div>
+          </Card>
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10">
+            <div className="p-6 text-center">
+              <div className="text-2xl font-bold text-green-400 mb-2">
+                {conversionStats.conversionRate}%
+              </div>
+              <div className="text-mb-gray">Конверсия</div>
+            </div>
+          </Card>
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10">
+            <div className="p-6 text-center">
+              <div className="text-2xl font-bold text-red-400 mb-2">
+                {conversionStats.totalSpent.toLocaleString()}₽
+              </div>
+              <div className="text-mb-gray">Потрачено</div>
+            </div>
           </Card>
         </div>
 
@@ -217,6 +316,53 @@ export default function CustomerDashboard() {
           )}
         </div>
       </div>
+
+      {/* Модальное окно пополнения баланса */}
+      {showDepositModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4 border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-white mb-4">Пополнить баланс</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-mb-gray mb-2">
+                    Сумма пополнения (₽)
+                  </label>
+                  <input
+                    type="number"
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-mb-input border border-mb-gray/30 rounded text-white focus:border-mb-turquoise focus:outline-none"
+                    min="100"
+                    step="100"
+                  />
+                </div>
+
+                <div className="text-sm text-mb-gray">
+                  Минимальная сумма: 1,000₽
+                </div>
+
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={handleDeposit}
+                    className="flex-1 bg-mb-turquoise hover:bg-mb-turquoise/80 text-mb-black"
+                  >
+                    Пополнить
+                  </Button>
+                  <Button
+                    onClick={() => setShowDepositModal(false)}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

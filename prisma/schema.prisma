@@ -106,6 +106,7 @@ model Order {
   targetAudience String?
   budget        Float
   reward        Float       // Сумма для исполнителя
+  totalReward   Float?      // Общая сумма кампании
   region        String
   socialNetwork SocialNetwork
   qrCode        String      @unique
@@ -115,6 +116,7 @@ model Order {
   quantity      Int         @default(1)  // Количество публикаций
   maxExecutions Int         @default(1)  // Максимум исполнителей
   completedCount Int        @default(0)  // Выполнено публикаций
+  completedExecutions Int   @default(0)  // Количество завершенных выполнений
   deadline      DateTime    // Срок выполнения
   campaignType  CampaignType @default(SINGLE)  // SINGLE, WEEKLY, BIWEEKLY
   totalQuantity Int         @default(1)  // Общее количество публикаций для кампании
@@ -138,21 +140,23 @@ model Order {
 
 // Выполнения заказов исполнителями
 model Execution {
-  id            String           @id @default(cuid())
-  screenshotUrl String?          // URL скриншота
-  notes         String?          // Заметки исполнителя
-  clicks        Int              @default(0)
-  reward        Float            // Сумма вознаграждения
-  status        ExecutionStatus  @default(PENDING)
-  reviewedAt    DateTime?        // Время проверки
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id                String           @id @default(cuid())
+  screenshotUrl     String?          // URL скриншота
+  notes             String?          // Заметки исполнителя
+  clicks            Int              @default(0)
+  reward            Float            // Сумма вознаграждения
+  status            ExecutionStatus  @default(PENDING)
+  reviewedAt        DateTime?        // Время проверки
+  moderatorId       String?          // ID модератора, который проверил
+  moderatorComment  String?          // Комментарий модератора
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
   
   // Связи
-  orderId       String
-  order         Order            @relation(fields: [orderId], references: [id])
-  executorId    String
-  executor      User             @relation(fields: [executorId], references: [id])
+  orderId           String
+  order             Order            @relation(fields: [orderId], references: [id])
+  executorId        String
+  executor          User             @relation(fields: [executorId], references: [id])
   
   @@unique([orderId, executorId]) // Защита от дублирования
   @@map("executions")
@@ -165,7 +169,9 @@ model Payment {
   type          PaymentType
   status        PaymentStatus @default(PENDING)
   description   String?       // Описание платежа
+  transactionId String?       // ID транзакции от платежной системы
   stripeId      String?
+  executorId    String?       // ID исполнителя (для выплат)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   
@@ -315,9 +321,10 @@ enum ExecutionStatus {
 
 // Типы платежей
 enum PaymentType {
-  DEPOSIT     // Пополнение счета
-  WITHDRAWAL  // Вывод средств
-  COMMISSION  // Комиссия платформы
+  DEPOSIT         // Пополнение счета
+  WITHDRAWAL      // Вывод средств
+  COMMISSION      // Комиссия платформы
+  EXECUTOR_PAYMENT // Выплата исполнителю
 }
 
 // Статусы платежей

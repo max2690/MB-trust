@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
 
       await prisma.payment.create({
         data: {
+          userId: execution.executorId,
           executorId: execution.executorId,
           orderId: execution.orderId,
           amount: executorAmount,
@@ -100,7 +101,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || 'PENDING_REVIEW'
 
     const executions = await prisma.execution.findMany({
-      where: { status },
+      where: { status: status as any },
       include: {
         order: {
           select: { title: true, description: true, reward: true }

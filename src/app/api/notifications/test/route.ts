@@ -52,11 +52,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: result.success,
-      message: result.success ? 'Уведомление отправлено успешно' : 'Ошибка отправки',
-      error: result.error,
-      method: result.method,
-      cost: result.cost
+      success: result?.success || false,
+      message: result?.success ? 'Уведомление отправлено успешно' : 'Ошибка отправки',
+      error: (result as any)?.error || undefined,
+      method: (result as any)?.method || undefined,
+      cost: (result as any)?.cost || undefined
     });
 
   } catch (error) {

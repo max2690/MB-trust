@@ -1,5 +1,27 @@
 import TelegramBot from 'node-telegram-bot-api';
 
+// Типы для Telegram Bot API
+type TelegramMessage = {
+  message_id: number;
+  from?: {
+    id: number;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+  };
+  chat: {
+    id: number;
+    type: string;
+  };
+  text?: string;
+  date: number;
+};
+
+type TelegramError = {
+  code: number;
+  description: string;
+};
+
 // Инициализация бота
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, { 
   polling: false,
@@ -170,7 +192,7 @@ export const setupTelegramBot = () => {
   console.log('🤖 Telegram бот отключен (polling и webhook отключены)');
   return;
   
-  bot.on('message', async (msg) => {
+  bot.on('message', async (msg: TelegramMessage) => {
     const chatId = msg.chat.id;
     const text = msg.text;
     
@@ -202,7 +224,7 @@ export const setupTelegramBot = () => {
     }
   });
   
-  bot.on('error', (error) => {
+  bot.on('error', (error: TelegramError) => {
     console.error('Ошибка Telegram бота:', error);
   });
   

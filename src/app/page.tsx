@@ -19,6 +19,11 @@ export default function HomePage() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
+            <Link href="/quick-access">
+              <Button variant="ghost" className="text-mb-turquoise">
+                🚀 Быстрый доступ
+              </Button>
+            </Link>
             <Link href="/auth/signin">
               <Button variant="ghost">Войти</Button>
             </Link>
@@ -65,7 +70,7 @@ export default function HomePage() {
       {/* Video Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="relative rounded-xl overflow-hidden bg-mb-black/50 border border-mb-gray/20 p-8">
+          <div className="relative rounded-xl overflow-hidden bg-mb-black/50 border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 p-8">
             <div className="flex items-center justify-center mb-4">
               <Play className="h-16 w-16 text-mb-turquoise mb-text-glow" />
             </div>
@@ -117,7 +122,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow hover:border-mb-turquoise/50 transition-all duration-200">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-mb-turquoise/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                 <Users className="h-6 w-6 text-mb-turquoise" />
@@ -136,7 +141,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow hover:border-mb-turquoise/50 transition-all duration-200">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-mb-gold/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                 <Target className="h-6 w-6 text-mb-gold" />
@@ -155,7 +160,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
+          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow hover:border-mb-turquoise/50 transition-all duration-200">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-mb-turquoise/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
                 <Shield className="h-6 w-6 text-mb-turquoise" />

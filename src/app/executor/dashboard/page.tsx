@@ -48,7 +48,11 @@ export default function ExecutorDashboard() {
     rating: 4.8
   });
 
+  // 🚀 КОСТЫЛЬ ДЛЯ ТЕСТИРОВАНИЯ - прямой доступ в dev режиме
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔥 DEV MODE: Прямой доступ к executor dashboard без авторизации');
+    }
     fetchData();
   }, []);
 

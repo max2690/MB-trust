@@ -42,6 +42,10 @@ export async function POST(request: NextRequest) {
       include: { admin: true }
     });
 
+    if (!updatedSession) {
+      return NextResponse.json({ error: 'Сессия не найдена' }, { status: 404 });
+    }
+
     const fullyVerified = isAdminFullyVerified(updatedSession);
 
     return NextResponse.json({

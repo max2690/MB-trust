@@ -102,7 +102,7 @@ export default function RootLayout({
                 "https://t.me/mbtrust",
                 "https://vk.com/mbtrust"
               ]
-            })
+            }, null, 0)
           }}
         />
         
@@ -125,7 +125,7 @@ export default function RootLayout({
                 "ratingValue": "4.8",
                 "ratingCount": "120"
               }
-            })
+            }, null, 0)
           }}
         />
       </head>

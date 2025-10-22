@@ -54,8 +54,12 @@ export async function GET(request: NextRequest) {
         },
         _sum: { amount: true }
       }),
-      prisma.clickLog.count({
-        where: { timestamp: { gte: startDate } }
+      prisma.execution.aggregate({
+        where: { 
+          createdAt: { gte: startDate },
+          clicks: { gt: 0 }
+        },
+        _sum: { clicks: true }
       }),
       prisma.user.count({
         where: {
@@ -92,7 +96,7 @@ export async function GET(request: NextRequest) {
         createdAt: { gte: startDate }
       },
       _count: { socialNetwork: true },
-      _sum: { budget: true }
+      _sum: { reward: true }
     })
 
     // Ежедневная статистика за последние 30 дней
@@ -100,7 +104,7 @@ export async function GET(request: NextRequest) {
       SELECT 
         DATE(createdAt) as date,
         COUNT(*) as orders,
-        SUM(budget) as revenue
+        SUM(reward) as revenue
       FROM Order 
       WHERE createdAt >= ${startDate}
       GROUP BY DATE(createdAt)
@@ -116,7 +120,7 @@ export async function GET(request: NextRequest) {
           totalOrders,
           totalExecutions,
           totalRevenue: totalRevenue._sum.amount || 0,
-          totalClicks,
+          totalClicks: totalClicks._sum.clicks || 0,
           activeExecutors,
           completedOrders,
           completionRate: totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0

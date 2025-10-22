@@ -83,8 +83,7 @@ export async function PUT(request: NextRequest) {
       where: { id: paymentId },
       data: {
         status,
-        transactionId,
-        processedAt: new Date()
+        transactionId
       }
     })
 

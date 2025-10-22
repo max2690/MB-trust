@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: result.success,
       message: result.success ? 'Email отправлен успешно' : 'Ошибка отправки',
-      error: result.error
+      error: (result as any).error || undefined
     });
 
   } catch (error) {
