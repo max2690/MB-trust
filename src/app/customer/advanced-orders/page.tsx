@@ -72,14 +72,14 @@ export default function AdvancedOrdersPage() {
                         <div key={order.id} className="p-4 border border-mb-gray/20 rounded">
                           <div className="text-white font-medium">{order.title}</div>
                           <div className="text-mb-gray text-sm">ID: {order.id}</div>
-                          <div className="text-mb-turquoise">Бюджет: {order.budget}₽</div>
+                          <div className="text-mb-turquoise">Общая сумма: {order.totalReward ?? order.reward ?? 0}₽</div>
                           <div className="text-mb-gold">Вознаграждение: {order.reward}₽</div>
                         </div>
                       )) : (
                         <div className="p-4 border border-mb-gray/20 rounded">
                           <div className="text-white font-medium">{orderGroup.title}</div>
                           <div className="text-mb-gray text-sm">ID: {orderGroup.id}</div>
-                          <div className="text-mb-turquoise">Бюджет: {orderGroup.budget}₽</div>
+                          <div className="text-mb-turquoise">Общая сумма: {orderGroup.totalReward ?? orderGroup.reward ?? 0}₽</div>
                           <div className="text-mb-gold">Вознаграждение: {orderGroup.reward}₽</div>
                         </div>
                       )}

@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { useState, useEffect } from 'react';
 import { OrderCard } from '@/components/business/OrderCard';
@@ -6,13 +6,13 @@ import { ScreenshotUpload } from '@/components/business/ScreenshotUpload';
 import { ExecutorLimits } from '@/components/business/ExecutorLimits';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Container from '@/components/ui/container';
 
 interface Order {
   id: string;
   title: string;
   description: string;
   targetAudience: string;
-  budget: number;
   reward: number;
   processedImageUrl: string;
   qrCodeUrl: string;
@@ -174,20 +174,20 @@ export default function ExecutorDashboard() {
 
   return (
     <div className="min-h-screen bg-mb-black">
-      <div className="container mx-auto px-4 py-8">
+      <Container className="py-8">
         <h1 className="text-3xl font-bold text-white mb-8">Дашборд исполнителя</h1>
 
             {/* Статистика и лимиты */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="p-6 text-center">
+              <Card className="text-center">
                 <h3 className="text-2xl font-bold text-mb-turquoise">{stats.earnings}₽</h3>
                 <p className="text-mb-gray">Заработано</p>
               </Card>
-              <Card className="p-6 text-center">
+              <Card className="text-center">
                 <h3 className="text-2xl font-bold text-mb-turquoise">{stats.completed}</h3>
                 <p className="text-mb-gray">Выполнено</p>
               </Card>
-              <Card className="p-6 text-center">
+              <Card className="text-center">
                 <h3 className="text-2xl font-bold text-mb-turquoise">{stats.rating}</h3>
                 <p className="text-mb-gray">Рейтинг</p>
               </Card>
@@ -197,7 +197,7 @@ export default function ExecutorDashboard() {
         {/* Загрузка скриншота для выбранного заказа */}
         {selectedOrder && (
           <div className="mb-8">
-            <Card className="p-6">
+            <Card>
               <h2 className="text-xl font-bold text-white mb-4">
                 Загрузите скриншот для заказа: {selectedOrder.title}
               </h2>
@@ -221,7 +221,7 @@ export default function ExecutorDashboard() {
         <section className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-6">Доступные заказы</h2>
           {availableOrders.length === 0 ? (
-            <Card className="p-8 text-center">
+            <Card className="text-center">
               <p className="text-mb-gray text-lg">Нет доступных заказов</p>
             </Card>
           ) : (
@@ -231,46 +231,44 @@ export default function ExecutorDashboard() {
                   key={order.id} 
                   order={order} 
                   onAccept={handleAcceptOrder}
+                  compact
                 />
               ))}
             </div>
           )}
-        </section>
+  </section>
         
-        {/* Мои выполнения */}
+  {/* Мои выполнения */}
         <section>
           <h2 className="text-2xl font-bold text-white mb-6">Мои выполнения</h2>
           {myExecutions.length === 0 ? (
-            <Card className="p-8 text-center">
+            <Card className="text-center">
               <p className="text-mb-gray text-lg">У вас пока нет выполненных заказов</p>
             </Card>
           ) : (
             <div className="grid gap-4">
               {myExecutions.map(execution => (
-                <Card key={execution.id} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-white">{execution.order.title}</h3>
-                      <p className="text-mb-gray text-sm">{execution.order.description}</p>
-                      <p className="text-mb-gray text-xs mt-1">
-                        Статус: {execution.status === 'PENDING' ? 'Ожидает' :
-                                execution.status === 'PENDING_REVIEW' ? 'На проверке' :
-                                execution.status === 'COMPLETED' ? 'Завершен' : execution.status}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-mb-turquoise font-semibold">{execution.reward}₽</span>
-                      <p className="text-mb-gray text-xs">
-                        {new Date(execution.createdAt).toLocaleDateString('ru-RU')}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
+                <OrderCard
+                  key={execution.id}
+                  order={{
+                    id: execution.id,
+                    title: execution.order.title,
+                    description: execution.order.description,
+                    targetAudience: '',
+                    reward: execution.reward,
+                    processedImageUrl: '',
+                    qrCodeUrl: '',
+                    deadline: execution.createdAt,
+                    customer: { name: '', level: '' }
+                  }}
+                  onAccept={() => {}}
+                  compact
+                />
               ))}
             </div>
           )}
         </section>
-      </div>
+      </Container>
     </div>
   );
 }

@@ -11,7 +11,6 @@ interface Order {
   id: string
   title: string
   description: string
-  budget: number
   region: string
   socialNetwork: string
   status: string
@@ -21,9 +20,15 @@ interface Order {
   }
 }
 
+// Added reward fields after schema change
+interface OrderWithReward extends Order {
+  reward?: number;
+  totalReward?: number;
+}
+
 export default function AvailableOrdersPage() {
   const router = useRouter()
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<OrderWithReward[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
 
@@ -215,7 +220,7 @@ export default function AvailableOrdersPage() {
                         </div>
                         <div>
                           <p className="text-sm text-mb-gray">Оплата</p>
-                          <p className="font-semibold text-mb-gold">{order.budget}₽</p>
+                          <p className="font-semibold text-mb-gold">{(order.reward ?? (order as any).totalReward) ?? 0}₽</p>
                         </div>
                       </div>
 

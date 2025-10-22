@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import Container from '@/components/ui/container'
+import { OrderCard } from '@/components/business/OrderCard'
 import { ArrowLeft, Plus, Target, DollarSign, Users, TrendingUp, Settings, LogOut } from 'lucide-react'
 
 export default function CustomerDashboardPage() {
@@ -9,7 +11,7 @@ export default function CustomerDashboardPage() {
     <div className="min-h-screen bg-mb-black text-mb-white">
       {/* Header */}
       <header className="border-b border-mb-gray/20 bg-mb-black/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <Container className="py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-mb-turquoise to-mb-gold rounded-lg flex items-center justify-center mb-text-glow">
               <span className="text-mb-black font-bold text-sm">MB</span>
@@ -28,10 +30,10 @@ export default function CustomerDashboardPage() {
               Выйти
             </Button>
           </div>
-        </div>
+        </Container>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <Container className="py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Добро пожаловать, Иван!</h1>
@@ -41,7 +43,7 @@ export default function CustomerDashboardPage() {
         {/* Stats Cards */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
-            <CardContent className="p-6">
+            <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-mb-gray">Активные задания</p>
@@ -53,7 +55,7 @@ export default function CustomerDashboardPage() {
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
-            <CardContent className="p-6">
+            <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-mb-gray">Потрачено</p>
@@ -65,7 +67,7 @@ export default function CustomerDashboardPage() {
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
-            <CardContent className="p-6">
+            <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-mb-gray">Исполнители</p>
@@ -77,7 +79,7 @@ export default function CustomerDashboardPage() {
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
-            <CardContent className="p-6">
+            <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-mb-gray">CTR</p>
@@ -117,30 +119,22 @@ export default function CustomerDashboardPage() {
           <h2 className="text-xl font-bold mb-4">Последние задания</h2>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="border-0 shadow-lg hover:shadow-glow transition-all duration-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">Промо для интернет-магазина #{i}</h3>
-                      <p className="text-sm text-mb-gray mb-2">Сторис с промокодом для интернет-магазина</p>
-                      <div className="flex items-center space-x-4 text-sm">
-                        <Badge variant="secondary">Instagram</Badge>
-                        <span className="text-mb-gray">Бюджет: <span className="text-mb-gold font-bold">500₽</span></span>
-                        <span className="text-mb-gray">Исполнителей: <span className="text-mb-turquoise font-bold">3</span></span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="default" className="mb-2">Активно</Badge>
-                      <p className="text-sm text-mb-gray">CTR: 3.2%</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <OrderCard key={i} order={{
+                id: String(i),
+                title: `Промо для интернет-магазина #${i}`,
+                description: 'Сторис с промокодом для интернет-магазина',
+                targetAudience: '18-34',
+                reward: 500,
+                processedImageUrl: '',
+                qrCodeUrl: '',
+                deadline: '',
+                customer: { name: 'Вы', level: 'VERIFIED' }
+              } as any} onAccept={() => {}} compact />
             ))}
           </div>
-        </div>
-
-        {/* Balance */}
+  </div>
+        
+  {/* Balance */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle>Баланс</CardTitle>
@@ -169,7 +163,7 @@ export default function CustomerDashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     </div>
   )
 }

@@ -3,7 +3,8 @@ export interface Order {
   title: string;
   description: string;
   targetAudience: string;
-  budget: number;
+  // budget removed; totalReward is the total amount paid by customer
+  totalReward?: number;
   reward: number;
   processedImageUrl: string;
   qrCodeUrl: string;
@@ -30,11 +31,10 @@ export interface Execution {
     reward: number;
     status: string;
   };
-  executor?: {
-    name: string;
-    level: string;
-    rating: number;
-  };
+    executor?: {
+      name: string;
+      level: string;
+    };
 }
 
 export interface User {

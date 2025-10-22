@@ -118,7 +118,7 @@ export function AdvancedOrderForm({ onSubmit }: AdvancedOrderFormProps) {
   };
 
   return (
-    <Card className="p-6">
+    <Card>
       <h2 className="text-2xl font-bold mb-6 text-white">Создать расширенный заказ</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -256,7 +256,7 @@ export function AdvancedOrderForm({ onSubmit }: AdvancedOrderFormProps) {
                 <h4 className="text-white font-medium mb-2">Общая информация</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-mb-gray">Общая стоимость:</span>
+                    <span className="text-mb-gray">Общая сумма:</span>
                     <span className="text-mb-turquoise font-bold">{calculation.totalCost.toLocaleString()}₽</span>
                   </div>
                   <div className="flex justify-between">

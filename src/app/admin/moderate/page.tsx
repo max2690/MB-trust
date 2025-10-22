@@ -170,7 +170,7 @@ export default function ModerationPage() {
                         </div>
                         <div>
                           <p className="text-sm text-mb-gray">Бюджет</p>
-                          <p className="font-semibold text-mb-gold">{execution.order.budget}₽</p>
+                          <p className="font-semibold text-mb-gold">{(execution.order as any).reward ?? (execution.order as any).totalReward ?? 0}₽</p>
                         </div>
                       </div>
 

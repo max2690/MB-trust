@@ -52,7 +52,7 @@ export function CreateOrderForm({ onSubmit }: CreateOrderFormProps) {
   };
 
   return (
-    <Card className="p-6">
+    <Card>
       <h2 className="text-2xl font-bold mb-6 text-white">Создать заказ</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -72,7 +72,7 @@ export function CreateOrderForm({ onSubmit }: CreateOrderFormProps) {
           
           <div>
             <label className="block text-sm font-medium mb-2 text-white">
-              Бюджет (₽)
+              Общая сумма (₽)
             </label>
             <Input
               type="number"

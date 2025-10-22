@@ -6,14 +6,19 @@ import { cn } from "@/lib/utils"
  * Можно менять только логику (props, handlers, state)
  */
 
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  compact?: boolean
+}
+
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  CardProps
+>(({ className, compact = false, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "mb-card p-6 shadow-card hover:shadow-glow transition-all duration-300",
+      "mb-card shadow-card hover:shadow-glow transition-all duration-300",
+      compact ? 'p-4' : 'p-6',
       className
     )}
     {...props}

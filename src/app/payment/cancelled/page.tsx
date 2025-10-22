@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Container from '@/components/ui/container';
 
 export default function PaymentCancelledPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-mb-black flex items-center justify-center p-4">
+    <Container className="min-h-screen bg-mb-black flex items-center justify-center p-4">
       <Card className="max-w-md w-full text-center">
         <CardHeader>
           <div className="text-6xl mb-4">❌</div>
@@ -16,7 +17,7 @@ export default function PaymentCancelledPage() {
             Платеж отменен
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <p className="text-mb-gray">
             Операция была отменена. Деньги не списаны с вашего счета.
           </p>
@@ -37,6 +38,6 @@ export default function PaymentCancelledPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }

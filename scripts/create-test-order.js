@@ -1,0 +1,47 @@
+const { PrismaClient } = require('@prisma/client')
+
+async function main() {
+  const prisma = new PrismaClient()
+  try {
+    let customer = await prisma.user.findFirst({ where: { phone: '0000000000' } })
+    if (!customer) {
+      customer = await prisma.user.create({
+        data: {
+          phone: '0000000000',
+          name: 'Test Customer',
+          passwordHash: 'test',
+          country: 'RU',
+          region: 'Moscow',
+          role: 'CUSTOMER',
+        },
+      })
+    }
+
+    const order = await prisma.order.create({
+      data: {
+        title: 'Test order from script',
+        description: 'Order created by Copilot test script',
+        targetAudience: '18-30',
+        reward: 1200,
+        region: 'Moscow',
+        socialNetwork: 'INSTAGRAM',
+        qrCode: `test-qr-${Date.now()}`,
+        qrCodeExpiry: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        processedImageUrl: 'https://example.com/img.jpg',
+        qrCodeUrl: 'https://example.com/qr.png',
+        quantity: 1,
+        deadline: new Date('2025-12-31'),
+        customerId: customer.id,
+      },
+    })
+
+    console.log('Created order:', { id: order.id, title: order.title, totalReward: order.totalReward })
+  } catch (e) {
+    console.error(e)
+    process.exit(1)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+main()
