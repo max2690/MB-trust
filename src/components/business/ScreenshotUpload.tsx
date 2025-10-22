@@ -28,7 +28,7 @@ export function ScreenshotUpload({ orderId, executorId, onUpload }: ScreenshotUp
   };
   
   return (
-    <Card className="p-6">
+    <Card>
       <h3 className="text-lg font-semibold mb-4 text-white">Загрузите скриншот:</h3>
       
       <div className="space-y-4">
@@ -43,8 +43,9 @@ export function ScreenshotUpload({ orderId, executorId, onUpload }: ScreenshotUp
           <div className="text-center">
             <img 
               src={URL.createObjectURL(file)} 
-              alt="Preview" 
+              alt={`Preview ${file.name}`} 
               className="mx-auto max-w-full h-48 object-cover rounded" 
+              loading="lazy"
             />
           </div>
         )}

@@ -1,5 +1,7 @@
 // SMS сервис с заглушкой для разработки
 
+import { getErrorMessage } from './error';
+
 // Отправка SMS кода верификации
 export const sendSMS = async (phone: string, code: string, type: 'admin' | 'user' = 'user') => {
   if (process.env.NODE_ENV === 'development') {
@@ -41,7 +43,7 @@ export const sendSMS = async (phone: string, code: string, type: 'admin' | 'user
     }
   } catch (error) {
     console.error('Ошибка отправки SMS:', error);
-      return { success: false, error: (error as any).message };
+      return { success: false, error: getErrorMessage(error) };
   }
 };
 
@@ -87,7 +89,7 @@ export const sendOrderSMS = async (phone: string, orderData: any) => {
     }
   } catch (error) {
     console.error('Ошибка отправки SMS уведомления:', error);
-      return { success: false, error: (error as any).message };
+      return { success: false, error: getErrorMessage(error) };
   }
 };
 
@@ -133,7 +135,7 @@ export const sendExecutionSMS = async (phone: string, executionData: any) => {
     }
   } catch (error) {
     console.error('Ошибка отправки SMS уведомления о выполнении:', error);
-      return { success: false, error: (error as any).message };
+      return { success: false, error: getErrorMessage(error) };
   }
 };
 
@@ -183,7 +185,7 @@ ${emoji} Баланс ${action}: ${balance}₽
     }
   } catch (error) {
     console.error('Ошибка отправки SMS уведомления о балансе:', error);
-      return { success: false, error: (error as any).message };
+      return { success: false, error: getErrorMessage(error) };
   }
 };
 

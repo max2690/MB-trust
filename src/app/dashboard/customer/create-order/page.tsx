@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import Container from '@/components/ui/container'
 import { ArrowLeft, Target, DollarSign, MapPin, Users, Calendar } from 'lucide-react'
 
 export default function CreateOrderPage() {
@@ -13,7 +14,8 @@ export default function CreateOrderPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    budget: '',
+  reward: '',
+  quantity: '1',
     region: '',
     socialNetwork: 'INSTAGRAM',
     targetUrl: '',
@@ -33,7 +35,9 @@ export default function CreateOrderPage() {
         },
         body: JSON.stringify({
           ...formData,
-          budget: parseFloat(formData.budget),
+          // totalReward is the total amount paid by the customer
+          totalReward: parseFloat(formData.reward),
+          reward: parseFloat((parseFloat(formData.reward) / parseInt(formData.quantity || '1')).toString()),
           customerId: 'temp-customer-id' // В реальном приложении будет из сессии
         }),
       })
@@ -66,7 +70,7 @@ export default function CreateOrderPage() {
     <div className="min-h-screen bg-mb-black text-mb-white">
       {/* Header */}
       <header className="border-b border-mb-gray/20 bg-mb-black/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <Container className="py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -81,10 +85,10 @@ export default function CreateOrderPage() {
               </span>
             </div>
           </div>
-        </div>
+        </Container>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <Container className="py-8">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4">Создать задание</h1>
@@ -146,10 +150,10 @@ export default function CreateOrderPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Бюджет (₽)</label>
+                  <label className="block text-sm font-medium mb-2">Общая сумма (₽)</label>
                   <Input
-                    value={formData.budget}
-                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                    value={formData.reward}
+                    onChange={(e) => setFormData({ ...formData, reward: e.target.value })}
                     placeholder="1000"
                     type="number"
                     min="100"
@@ -232,7 +236,7 @@ export default function CreateOrderPage() {
             </Button>
           </form>
         </div>
-      </div>
+      </Container>
     </div>
   )
 }

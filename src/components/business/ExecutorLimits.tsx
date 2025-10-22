@@ -49,7 +49,7 @@ export function ExecutorLimits({ executorId }: ExecutorLimitsProps) {
 
   if (loading) {
     return (
-      <Card className="p-6">
+          <Card>
         <p className="text-mb-gray">Загрузка лимитов...</p>
       </Card>
     );
@@ -57,7 +57,7 @@ export function ExecutorLimits({ executorId }: ExecutorLimitsProps) {
 
   if (!limits) {
     return (
-      <Card className="p-6">
+          <Card>
         <p className="text-mb-red">Ошибка загрузки лимитов</p>
       </Card>
     );
@@ -84,7 +84,7 @@ export function ExecutorLimits({ executorId }: ExecutorLimitsProps) {
   };
 
   return (
-    <Card className="p-6">
+  <Card>
       <h3 className="text-lg font-semibold text-white mb-4">Ваши лимиты</h3>
       
       <div className="space-y-4">

@@ -34,11 +34,13 @@ export async function GET() {
       if (order.executions.length === 0) {
         try {
           // Создаем автоматический возврат
+          const refundAmount = (order as any).totalReward ?? order.reward ?? 0;
+
           const refund = await prisma.refund.create({
             data: {
               orderId: order.id,
               customerId: order.customerId,
-              amount: order.budget,
+              amount: refundAmount,
               reason: 'Автоматический возврат: заказ не выполнен в срок',
               status: 'PENDING'
             }
@@ -51,7 +53,7 @@ export async function GET() {
           });
 
           processedRefunds.push(refund);
-          console.log(`✅ Создан возврат для заказа ${order.id}: ${order.budget}₽`);
+          console.log(`✅ Создан возврат для заказа ${order.id}: ${refundAmount}₽`);
 
         } catch (error) {
           console.error(`❌ Ошибка создания возврата для заказа ${order.id}:`, error);

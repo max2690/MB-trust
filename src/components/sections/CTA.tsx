@@ -1,9 +1,10 @@
 /** @cursor NO_LAYOUT_CHANGES */
 import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import Section from '@/components/ui/section'
 export default function CTA() {
   return (
-    <section className="py-12 md:py-20">
+    <Section>
       <Container>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center shadow-card">
           <h3 className="text-2xl font-semibold">Готовы ускорить бизнес?</h3>
@@ -13,6 +14,6 @@ export default function CTA() {
           </div>
         </div>
       </Container>
-    </section>
-  );
+    </Section>
+  )
 }

@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Container from '@/components/ui/container';
+import { OrderCard } from '@/components/business/OrderCard';
 
 interface Admin {
   id: string;
@@ -215,7 +217,7 @@ export default function AdminGodDashboard() {
 
   return (
     <div className="min-h-screen bg-mb-black text-white">
-      <div className="container mx-auto px-4 py-8">
+      <Container>
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -240,27 +242,27 @@ export default function AdminGodDashboard() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <Card className="p-6 text-center">
+          <Card className="text-center">
             <h3 className="text-2xl font-bold text-mb-turquoise">{users.length}</h3>
             <p className="text-mb-gray">Всего пользователей</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="text-center">
             <h3 className="text-2xl font-bold text-mb-gold">{admins.length}</h3>
             <p className="text-mb-gray">Администраторов</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="text-center">
             <h3 className="text-2xl font-bold text-mb-turquoise">
               {users.filter(u => u.isVerified).length}
             </h3>
             <p className="text-mb-gray">Верифицированных</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="text-center">
             <h3 className="text-2xl font-bold text-mb-red">
               {users.filter(u => u.isBlocked).length}
             </h3>
             <p className="text-mb-gray">Заблокированных</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="text-center">
             <h3 className="text-2xl font-bold text-mb-gold">50,000₽</h3>
             <p className="text-mb-gray">Баланс админа</p>
           </Card>
@@ -268,7 +270,7 @@ export default function AdminGodDashboard() {
 
         {/* Create Admin Modal */}
         {showCreateAdmin && (
-          <Card className="p-6 mb-8">
+          <Card className="mb-8">
             <h2 className="text-2xl font-bold mb-4">Создать модератора-админа</h2>
             <form onSubmit={handleCreateAdmin} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -340,7 +342,7 @@ export default function AdminGodDashboard() {
 
         {/* Block Users Modal */}
         {showBlockUsers && (
-          <Card className="p-6 mb-8">
+          <Card className="mb-8">
             <h2 className="text-2xl font-bold mb-4">Блокировка пользователей</h2>
             <div className="mb-4">
               <Label htmlFor="blockReason">Причина блокировки</Label>
@@ -379,7 +381,7 @@ export default function AdminGodDashboard() {
         )}
 
         {/* Admins Table */}
-        <Card className="p-6 mb-8">
+        <Card className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Администраторы</h2>
           <Table>
             <TableHeader>
@@ -422,7 +424,7 @@ export default function AdminGodDashboard() {
         </Card>
 
         {/* Users Table */}
-        <Card className="p-6">
+        <Card>
           <h2 className="text-2xl font-bold mb-4">Пользователи</h2>
           <Table>
             <TableHeader>
@@ -494,7 +496,7 @@ export default function AdminGodDashboard() {
             {error}
           </div>
         )}
-      </div>
+      </Container>
     </div>
   );
 }

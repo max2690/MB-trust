@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Container from '@/components/ui/container';
 
 export default function PaymentSuccessPage() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function PaymentSuccessPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-mb-black flex items-center justify-center p-4">
+    <Container className="min-h-screen bg-mb-black flex items-center justify-center p-4">
       <Card className="max-w-md w-full text-center">
         <CardHeader>
           <div className="text-6xl mb-4">✅</div>
@@ -26,7 +27,7 @@ export default function PaymentSuccessPage() {
             Платеж успешно выполнен!
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <p className="text-mb-gray">
             Ваш баланс пополнен. Средства поступят в течение нескольких минут.
           </p>
@@ -50,6 +51,6 @@ export default function PaymentSuccessPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }

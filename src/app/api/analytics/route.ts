@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
         createdAt: { gte: startDate }
       },
       _count: { socialNetwork: true },
-      _sum: { budget: true }
+      _sum: { reward: true }
     })
 
     // Ежедневная статистика за последние 30 дней
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       SELECT 
         DATE(createdAt) as date,
         COUNT(*) as orders,
-        SUM(budget) as revenue
+        SUM(reward) as revenue
       FROM Order 
       WHERE createdAt >= ${startDate}
       GROUP BY DATE(createdAt)

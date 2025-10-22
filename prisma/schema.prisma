@@ -104,8 +104,9 @@ model Order {
   title         String
   description   String
   targetAudience String?
-  budget        Float
-  reward        Float       // Сумма для исполнителя
+  // budget removed, use reward for per-execution amount
+  reward        Float       // Сумма для исполнителя (первая при создании — ставка за исполнение)
+  totalReward   Float?      // Общая сумма, уплаченная заказчиком (опционально)
   region        String
   socialNetwork SocialNetwork
   qrCode        String      @unique

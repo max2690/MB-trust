@@ -93,12 +93,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Возврат уже создан' }, { status: 400 });
     }
 
-    // Создаем возврат
+    // Создаем возврат — используем totalReward (сумма заказа) если доступна, иначе reward
+    const refundAmount = (order as any).totalReward ?? order.reward ?? 0;
+
     const refund = await prisma.refund.create({
       data: {
         orderId,
         customerId,
-        amount: order.budget,
+        amount: refundAmount,
         reason,
         status: 'PENDING'
       }

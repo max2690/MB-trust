@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       title, 
       description, 
       targetAudience, 
-      budget, 
+      reward, 
       processedImageUrl, 
       qrCodeUrl,
       customerId,
@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Валидация
-    if (!title || !description || !budget || !processedImageUrl || !qrCodeUrl) {
+      if (!title || !description || !reward || !processedImageUrl || !qrCodeUrl) {
       return NextResponse.json({ error: 'Не все поля заполнены' }, { status: 400 });
     }
 
-    const totalBudget = parseFloat(budget);
-    const rewardPerExecution = totalBudget / quantity; // Равномерное распределение
+        const parsedReward = parseFloat(reward);
+        const rewardPerExecution = parsedReward / quantity; // Равномерное распределение
     const deadlineDate = deadline ? new Date(deadline) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     // Создаем заказы (один или несколько для массовых заказов)
@@ -51,8 +51,9 @@ export async function POST(request: NextRequest) {
           title: quantity > 1 ? `${title} (${i + 1}/${quantity})` : title,
           description,
           targetAudience: targetAudience || '',
-          budget: totalBudget,
-          reward: rewardPerExecution,
+            // reward is the amount per execution
+            reward: rewardPerExecution,
+            totalReward: parsedReward,
           region: 'Россия',
           socialNetwork,
           qrCode: qrCodeId,
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
           customerId: customerId || 'temp-customer',
         }
       });
-      
+
       orders.push(order);
     }
 

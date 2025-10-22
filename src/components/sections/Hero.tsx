@@ -1,12 +1,12 @@
 /** @cursor NO_LAYOUT_CHANGES */
 import Image from "next/image";
-import Container from "@/components/ui/Container";
+import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import Section from '@/components/ui/section'
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden py-12 md:py-20">
-      <div className="absolute inset-0 opacity-60 bg-[radial-gradient(ellipse_at_top,rgba(255,214,90,0.08),transparent_60%)] pointer-events-none" />
+    <Section>
       <Container>
         <div className="relative grid items-center gap-12 md:grid-cols-2">
           <div>
@@ -27,6 +27,6 @@ export default function Hero() {
           </div>
         </div>
       </Container>
-    </section>
-  );
+    </Section>
+  )
 }
