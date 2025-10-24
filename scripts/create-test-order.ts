@@ -23,8 +23,13 @@ async function main() {
         title: 'Test order from script',
         description: 'Order created by Copilot test script',
         targetAudience: '18-30',
-        reward: 1200,
-        totalReward: 1200,
+        pricePerStory: 1200,
+        platformCommission: 120,
+        executorEarnings: 1080,
+        platformEarnings: 120,
+        budget: 1200, // Старое поле для совместимости
+        reward: 1200, // Старое поле для совместимости
+        customerId: customer.id,
         region: 'Moscow',
         socialNetwork: 'INSTAGRAM',
         qrCode: `test-qr-${Date.now()}`,

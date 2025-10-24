@@ -26,6 +26,36 @@ model User {
   isBlocked     Boolean   @default(false)
   telegramId    String?   @unique  // Telegram ID для верификации
   rating        Float?    @default(0)  // Рейтинг пользователя
+  
+  // Активация аккаунта
+  isActivated          Boolean  @default(false)
+  activationStoryId    String?
+  activationCompletedAt DateTime?
+  
+  // Уровень доверия
+  trustLevelId         String?
+  trustLevel           TrustLevel? @relation(fields: [trustLevelId], references: [id])
+  totalExecutions      Int      @default(0)
+  averageRating        Decimal  @default(0)
+  daysActive           Int      @default(0)
+  lastLevelCheck       DateTime @default(now())
+  levelUpEligible      Boolean  @default(false)
+  
+  // Налоговая верификация
+  isSelfEmployed       Boolean  @default(false)
+  innNumber           String?
+  nalogVerificationStatus String @default("PENDING")
+  nalogVerifiedAt     DateTime?
+  
+  // Telegram Wallet
+  telegramWalletId     String?
+  telegramWalletVerified Boolean @default(false)
+  telegramWalletVerifiedAt DateTime?
+  
+  // Настройки выплат
+  preferredPayoutMethod PayoutMethod @default(TELEGRAM_WALLET)
+  maxPayoutAmount      Decimal?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
@@ -37,6 +67,9 @@ model User {
   referredBy    Referral? @relation("Referred")
   dailyLimits   ExecutorDailyLimit[]
   refunds       Refund[]
+  activationStories    ActivationStory[]
+  payouts             Payout[]
+  telegramVerifications TelegramVerification[]
   
   @@map("users")
 }
@@ -125,6 +158,21 @@ model Order {
   refundOnFailure Boolean   @default(true)    // Возврат при невыполнении
   refundDeadline DateTime?  // Дедлайн для возврата (72 часа после deadline)
   status        OrderStatus @default(PENDING)
+  
+  // Ценообразование
+  pricePerStory       Decimal  // Цена за одну сторис
+  platformCommission  Decimal  // Комиссия платформы
+  executorEarnings     Decimal  // Сколько получит исполнитель
+  platformEarnings    Decimal  // Сколько получит платформа
+  
+  // Уровень исполнителя
+  requiredTrustLevelId String?
+  requiredTrustLevel   TrustLevel? @relation(fields: [requiredTrustLevelId], references: [id])
+  
+  // Тестовый режим
+  isTestOrder Boolean  @default(false)
+  testMode    Boolean  @default(false)
+  
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   
@@ -149,6 +197,10 @@ model Execution {
   reviewedAt        DateTime?        // Время проверки
   moderatorId       String?          // ID модератора, который проверил
   moderatorComment  String?          // Комментарий модератора
+  
+  // Тестовый режим
+  isTestExecution Boolean @default(false)
+  
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   
@@ -275,6 +327,96 @@ model Refund {
   @@map("refunds")
 }
 
+// Система уровней доверия
+model TrustLevel {
+  id          String   @id @default(cuid())
+  name        String   // "NOVICE", "VERIFIED", "REFERRAL", "TOP"
+  displayName String   // "Новичок", "Проверенный", "Реферальный", "Топ"
+  
+  // Ценообразование
+  minPricePerStory Decimal  // Минимальная цена за сторис
+  commissionRate   Decimal  // Комиссия платформы (0.4, 0.5, 0.6, 0.8)
+  
+  // Требования для получения уровня
+  minExecutions    Int      // Минимум выполненных заданий
+  minRating        Decimal  // Минимальный рейтинг
+  minDaysActive    Int      // Минимум дней активности
+  
+  // Настройки админа
+  isActive         Boolean  @default(true)
+  adminNotes       String?  // Заметки админа
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Связи
+  users           User[]
+  orders          Order[]
+  
+  @@map("trust_levels")
+}
+
+// Активация аккаунтов
+model ActivationStory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  platform    String   // "instagram", "tiktok", "vk"
+  qrCodeId    String   // ID QR-кода для отслеживания
+  screenshotUrl String? // URL скриншота
+  status      ActivationStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+  
+  @@map("activation_stories")
+}
+
+// Выплаты
+model Payout {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  amount      Decimal  // Сумма выплаты
+  method      PayoutMethod // Способ выплаты
+  status      PayoutStatus @default(PENDING)
+  
+  // Банк СПБ
+  bankAccountId String? // ID счета в банке
+  transactionId String? // ID транзакции
+  
+  // Telegram Wallet
+  telegramTransactionId String? // ID транзакции в Telegram
+  
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+  completedAt DateTime?
+  
+  @@map("payouts")
+}
+
+// Telegram верификация и мониторинг
+model TelegramVerification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  telegramUsername String   // @username пользователя
+  telegramUserId    String   // ID пользователя в Telegram
+  isVerified       Boolean  @default(false)
+  isMonitoring     Boolean  @default(false) // Мониторинг активен
+  
+  // Статистика
+  storiesMonitored Int      @default(0)
+  storiesApproved  Int      @default(0)
+  lastStoryCheck   DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("telegram_verifications")
+}
+
 // Система уровней пользователей
 enum UserLevel {
   NOVICE      // 40% - первые 3 дня, максимум 5 сторис/день
@@ -363,4 +505,27 @@ enum VerificationType {
   SMS       // SMS верификация
   EMAIL     // Email верификация
   TELEGRAM  // Telegram верификация
+}
+
+// Статусы активации
+enum ActivationStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+// Способы выплат
+enum PayoutMethod {
+  BANK_SPB
+  TELEGRAM_WALLET
+}
+
+// Статусы выплат
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
 }

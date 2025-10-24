@@ -228,6 +228,21 @@ export default function AdminGodDashboard() {
             <Button onClick={() => window.open('/admin/analytics', '_blank')} variant="outline">
               📊 Аналитика
             </Button>
+            <Button onClick={() => window.open('/admin-god/trust-levels', '_blank')} variant="outline">
+              👑 Уровни доверия
+            </Button>
+            <Button onClick={() => window.open('/activation', '_blank')} variant="outline">
+              🎯 Активация
+            </Button>
+            <Button onClick={() => window.open('/verification', '_blank')} variant="outline">
+              🔍 Верификация
+            </Button>
+            <Button onClick={() => window.open('/verification/telegram', '_blank')} variant="outline">
+              🤖 Telegram
+            </Button>
+            <Button onClick={() => window.open('/init', '_blank')} variant="outline">
+              🚀 Инициализация
+            </Button>
             <Button onClick={() => setShowCreateAdmin(true)} variant="outline">
               Создать модератора
             </Button>

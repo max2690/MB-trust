@@ -51,9 +51,15 @@ export async function POST(request: NextRequest) {
           title: quantity > 1 ? `${title} (${i + 1}/${quantity})` : title,
           description,
           targetAudience: targetAudience || '',
-            // reward is the amount per execution
-            reward: rewardPerExecution,
-            totalReward: parsedReward,
+          pricePerStory: rewardPerExecution,
+          platformCommission: parsedReward * 0.1, // 10% комиссия платформы
+          executorEarnings: parsedReward * 0.9,
+          platformEarnings: parsedReward * 0.1,
+          budget: parsedReward, // Старое поле для совместимости
+          reward: rewardPerExecution, // Старое поле для совместимости
+          customer: {
+            connect: { id: customerId || 'temp-customer' }
+          },
           region: 'Россия',
           socialNetwork,
           qrCode: qrCodeId,
