@@ -1,6 +1,5 @@
-import { setupTelegramBot } from './telegram';
-
 // Инициализация Telegram бота при запуске приложения
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const initializeTelegramBot = () => {
   if (process.env.TELEGRAM_BOT_TOKEN) {
     console.log('🤖 Telegram бот отключен для избежания конфликтов');

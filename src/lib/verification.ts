@@ -11,15 +11,26 @@ export enum VerificationMethod {
   SMS = 'sms'
 }
 
-// Приоритеты методов верификации
-const verificationPriority = {
-  [VerificationMethod.TELEGRAM]: 1, // Самый приоритетный
-  [VerificationMethod.EMAIL]: 2,    // Второй по приоритету
-  [VerificationMethod.SMS]: 3       // Последний (платный)
-};
+// Типы для верификации
+interface UserForVerification {
+  telegramId?: string | null;
+  email?: string | null;
+  phone: string;
+}
+
+interface AdminForVerification {
+  telegramId?: string | null;
+  email?: string | null;
+  phone?: string | null;
+}
+
+interface SessionForVerification {
+  smsVerified: boolean;
+  emailVerified: boolean;
+}
 
 // Выбор метода верификации для пользователя
-export const chooseVerificationMethod = (user: any): VerificationMethod => {
+export const chooseVerificationMethod = (user: UserForVerification): VerificationMethod => {
   // 🚀 КОСТЫЛЬ ДЛЯ ТЕСТИРОВАНИЯ - в dev режиме всегда EMAIL
   if (process.env.NODE_ENV === 'development') {
     console.log('🔥 DEV MODE: Автоматический выбор EMAIL для верификации');
@@ -41,7 +52,7 @@ export const chooseVerificationMethod = (user: any): VerificationMethod => {
 };
 
 // Выбор метода верификации для админа
-export const chooseAdminVerificationMethod = (admin: any): VerificationMethod => {
+export const chooseAdminVerificationMethod = (admin: AdminForVerification): VerificationMethod => {
   // 🚀 КОСТЫЛЬ ДЛЯ ТЕСТИРОВАНИЯ - в dev режиме всегда EMAIL
   if (process.env.NODE_ENV === 'development') {
     console.log('🔥 DEV MODE: Автоматический выбор EMAIL для админ верификации');
@@ -85,7 +96,7 @@ export const createVerificationCode = async (
 
 // Отправка кода верификации
 export const sendVerificationCodeToUser = async (
-  user: any,
+  user: UserForVerification,
   code: string,
   type: 'admin' | 'user' = 'user'
 ) => {
@@ -93,10 +104,10 @@ export const sendVerificationCodeToUser = async (
   
   switch (method) {
     case VerificationMethod.TELEGRAM:
-      return await sendVerificationCode(user.telegramId, code, type);
+      return await sendVerificationCode(user.telegramId!, code, type);
     
     case VerificationMethod.EMAIL:
-      return await sendVerificationEmail(user.email, code, type);
+      return await sendVerificationEmail(user.email!, code, type);
     
     case VerificationMethod.SMS:
       return await sendSMS(user.phone, code, type);
@@ -108,20 +119,20 @@ export const sendVerificationCodeToUser = async (
 
 // Отправка кода верификации админу
 export const sendVerificationCodeToAdmin = async (
-  admin: any,
+  admin: AdminForVerification,
   code: string
 ) => {
   const method = chooseAdminVerificationMethod(admin);
   
   switch (method) {
     case VerificationMethod.TELEGRAM:
-      return await sendVerificationCode(admin.telegramId, code, 'admin');
+      return await sendVerificationCode(admin.telegramId!, code, 'admin');
     
     case VerificationMethod.EMAIL:
-      return await sendVerificationEmail(admin.email, code, 'admin');
+      return await sendVerificationEmail(admin.email!, code, 'admin');
     
     case VerificationMethod.SMS:
-      return await sendSMS(admin.phone, code, 'admin');
+      return await sendSMS(admin.phone!, code, 'admin');
     
     default:
       throw new Error('Неизвестный метод верификации');
@@ -213,7 +224,7 @@ export const updateSessionVerification = async (
 };
 
 // Полная верификация админа (SMS + Email)
-export const isAdminFullyVerified = (session: any): boolean => {
+export const isAdminFullyVerified = (session: SessionForVerification): boolean => {
   return session.smsVerified && session.emailVerified;
 };
 
@@ -267,7 +278,7 @@ export const getVerificationStats = async () => {
 };
 
 // Многоуровневая верификация для админов
-export const initiateMultiLevelVerification = async (admin: any) => {
+export const initiateMultiLevelVerification = async (admin: AdminForVerification & { id: string }) => {
   const results = [];
   
   // 1. SMS верификация
@@ -290,14 +301,14 @@ export const initiateMultiLevelVerification = async (admin: any) => {
   if (admin.telegramId) {
     const telegramCode = generateVerificationCode();
     await createVerificationCode(admin.id, 'TELEGRAM', telegramCode);
-    const telegramResult = await sendVerificationCode(admin.telegramId, telegramCode, 'admin');
+    const telegramResult = await sendVerificationCode(admin.telegramId!, telegramCode, 'admin');
     results.push({ method: 'TELEGRAM', success: telegramResult.success, code: telegramCode });
   }
   
   return results;
 };
 
-export default {
+const verificationModule = {
   VerificationMethod,
   chooseVerificationMethod,
   chooseAdminVerificationMethod,
@@ -315,4 +326,6 @@ export default {
   getVerificationStats,
   initiateMultiLevelVerification
 };
+
+export default verificationModule;
 

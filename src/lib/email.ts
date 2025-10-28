@@ -95,6 +95,7 @@ export const sendVerificationEmail = async (email: string, code: string, type: '
 };
 
 // Отправка уведомления о заказе
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sendOrderEmail = async (email: string, orderData: any) => {
   try {
     const transporter = createTransporter();
@@ -164,6 +165,7 @@ export const sendOrderEmail = async (email: string, orderData: any) => {
 };
 
 // Отправка уведомления о выполнении
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sendExecutionEmail = async (email: string, executionData: any) => {
   try {
     const transporter = createTransporter();
@@ -299,11 +301,13 @@ export const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-export default {
+const emailModule = {
   sendVerificationEmail,
   sendOrderEmail,
   sendExecutionEmail,
   sendBalanceEmail,
   isValidEmail
 };
+
+export default emailModule;
 

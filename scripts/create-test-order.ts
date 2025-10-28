@@ -38,7 +38,6 @@ async function main() {
         qrCodeUrl: 'https://example.com/qr.png',
         quantity: 1,
         deadline: new Date('2025-12-31'),
-        customerId: customer.id,
       },
     })
 

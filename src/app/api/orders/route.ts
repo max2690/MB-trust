@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { nanoid } from 'nanoid';
+import QRCode from 'qrcode';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,9 +31,31 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Валидация
-      if (!title || !description || !reward || !processedImageUrl || !qrCodeUrl) {
+    if (!title || !description || !reward) {
       return NextResponse.json({ error: 'Не все поля заполнены' }, { status: 400 });
     }
+
+    // Генерируем изображения если не предоставлены
+    const finalProcessedImageUrl = processedImageUrl || `https://via.placeholder.com/400x400/3B82F6/FFFFFF?text=${encodeURIComponent(title)}`;
+    
+    // Генерируем настоящий QR код
+    const qrCodeData = {
+      orderId: nanoid(),
+      platform: socialNetwork,
+      url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/track/${nanoid()}`,
+      timestamp: new Date().toISOString()
+    };
+    
+    const qrCodeImage = await QRCode.toDataURL(JSON.stringify(qrCodeData), {
+      width: 200,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    });
+    
+    const finalQrCodeUrl = qrCodeUrl || qrCodeImage;
 
         const parsedReward = parseFloat(reward);
         const rewardPerExecution = parsedReward / quantity; // Равномерное распределение
@@ -44,6 +67,25 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < quantity; i++) {
       const orderId = nanoid();
       const qrCodeId = `${orderId}-${i}`;
+      
+      // Генерируем уникальный QR код для каждого заказа
+      const uniqueQrCodeData = {
+        orderId: orderId,
+        platform: socialNetwork,
+        url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/track/${qrCodeId}`,
+        timestamp: new Date().toISOString(),
+        orderNumber: i + 1,
+        totalOrders: quantity
+      };
+      
+      const uniqueQrCodeImage = await QRCode.toDataURL(JSON.stringify(uniqueQrCodeData), {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
       
       const order = await prisma.order.create({
         data: {
@@ -64,8 +106,8 @@ export async function POST(request: NextRequest) {
           socialNetwork,
           qrCode: qrCodeId,
           qrCodeExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          processedImageUrl,
-          qrCodeUrl,
+          processedImageUrl: finalProcessedImageUrl,
+          qrCodeUrl: uniqueQrCodeImage,
           quantity: 1,
           maxExecutions: 1,
           completedCount: 0,
@@ -78,7 +120,6 @@ export async function POST(request: NextRequest) {
           refundOnFailure,
           refundDeadline: refundDeadline ? new Date(refundDeadline) : new Date(deadlineDate.getTime() + 72 * 60 * 60 * 1000),
           status: 'PENDING',
-          customerId: customerId || 'temp-customer',
         }
       });
 

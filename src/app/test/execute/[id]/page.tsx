@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,7 +29,8 @@ interface AIResult {
   message: string;
 }
 
-export default function TestExecutePage({ params }: { params: { id: string } }) {
+export default function TestExecutePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const [order, setOrder] = useState<TestOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
@@ -39,11 +40,11 @@ export default function TestExecutePage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     fetchOrder();
-  }, [params.id]);
+  }, [id]);
 
   const fetchOrder = async () => {
     try {
-      const response = await fetch(`/api/test/orders/${params.id}`);
+      const response = await fetch(`/api/test/orders/${id}`);
       const data = await response.json();
       
       if (data.success) {
@@ -90,7 +91,7 @@ export default function TestExecutePage({ params }: { params: { id: string } }) 
         },
         body: JSON.stringify({
           screenshot: screenshots[currentStep],
-          orderId: params.id,
+          orderId: id,
           stepNumber: currentStep
         }),
       });

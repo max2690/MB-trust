@@ -17,14 +17,14 @@ interface AdminStats {
     completionRate: string;
   };
   breakdown: {
-    usersByRole: Array<{ role: string; _count: { id: number } }>;
-    usersByLevel: Array<{ level: string; _count: { id: number } }>;
-    ordersByPlatform: Array<{ socialNetwork: string; _count: { id: number }; _sum: { budget: number | null } }>;
-    usersByRegion: Array<{ region: string; _count: { id: number } }>;
+    usersByRole: Array<{ role: string; count: number }>;
+    usersByLevel: Array<{ level: string; count: number }>;
+    ordersByPlatform: Array<{ platform: string; count: number }>;
+    usersByRegion: Array<{ region: string; count: number }>;
   };
   topUsers: {
-    executors: Array<any>;
-    customers: Array<any>;
+    executors: Array<{ name: string; earnings: number; executions: number }>;
+    customers: Array<{ name: string; spent: number; orders: number }>;
   };
 }
 
@@ -209,7 +209,7 @@ export default function AdminDashboard() {
                   {stats.breakdown.usersByRole.map(item => (
                     <div key={item.role} className="flex justify-between">
                       <span className="text-mb-gray capitalize">{item.role}</span>
-                      <Badge variant="gold">{item._count.id}</Badge>
+                      <Badge variant="gold">{item.count}</Badge>
                     </div>
                   ))}
                 </div>
@@ -219,9 +219,9 @@ export default function AdminDashboard() {
                 <h3 className="text-xl font-bold text-white mb-4">Заказы по платформам</h3>
                 <div className="space-y-2">
                   {stats.breakdown.ordersByPlatform.map(item => (
-                    <div key={item.socialNetwork} className="flex justify-between">
-                      <span className="text-mb-gray">{item.socialNetwork}</span>
-                      <Badge variant="gold">{item._count.id}</Badge>
+                    <div key={item.platform} className="flex justify-between">
+                      <span className="text-mb-gray">{item.platform}</span>
+                      <Badge variant="gold">{item.count}</Badge>
                     </div>
                   ))}
                 </div>
@@ -234,12 +234,12 @@ export default function AdminDashboard() {
                 <h3 className="text-xl font-bold text-white mb-4">Топ исполнители</h3>
                 <div className="space-y-2">
                   {stats.topUsers.executors.slice(0, 5).map((executor, index) => (
-                    <div key={executor.id} className="flex justify-between items-center">
+                    <div key={executor.name} className="flex justify-between items-center">
                       <div>
                         <span className="text-white">{executor.name}</span>
-                        <Badge variant="outline" className="ml-2">{executor.level}</Badge>
+                        <Badge variant="outline" className="ml-2">NOVICE</Badge>
                       </div>
-                      <span className="text-mb-turquoise">{executor._count.executions} заказов</span>
+                      <span className="text-mb-turquoise">{executor.executions} заказов</span>
                     </div>
                   ))}
                 </div>
@@ -249,12 +249,12 @@ export default function AdminDashboard() {
                 <h3 className="text-xl font-bold text-white mb-4">Топ заказчики</h3>
                 <div className="space-y-2">
                   {stats.topUsers.customers.slice(0, 5).map((customer, index) => (
-                    <div key={customer.id} className="flex justify-between items-center">
+                    <div key={customer.name} className="flex justify-between items-center">
                       <div>
                         <span className="text-white">{customer.name}</span>
-                        <Badge variant="outline" className="ml-2">{customer.level}</Badge>
+                        <Badge variant="outline" className="ml-2">NOVICE</Badge>
                       </div>
-                      <span className="text-mb-turquoise">{customer._count.orders} заказов</span>
+                      <span className="text-mb-turquoise">{customer.orders} заказов</span>
                     </div>
                   ))}
                 </div>
@@ -310,7 +310,7 @@ export default function AdminDashboard() {
                         <td className="p-2 text-mb-gray">{user.region}</td>
                         <td className="p-2 text-mb-turquoise">{user.balance}₽</td>
                         <td className="p-2 text-mb-gray">
-                          {user._count.orders} / {user._count.executions}
+                          {user._count?.orders || 0} / {user._count?.executions || 0}
                         </td>
                         <td className="p-2">
                           <div className="flex space-x-2">

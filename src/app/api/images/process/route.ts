@@ -10,7 +10,34 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    let body;
+    const contentType = request.headers.get('content-type');
+    
+    if (contentType?.includes('application/json')) {
+      try {
+        body = await request.json();
+      } catch (error) {
+        console.error('JSON parse error:', error);
+        return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+      }
+    } else if (contentType?.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      body = {
+        imageUrl: formData.get('imageUrl'),
+        qrText: formData.get('qrText'),
+        overlay: formData.get('overlay') === 'true'
+      };
+    } else {
+      // Попробуем как текст
+      const text = await request.text();
+      try {
+        body = JSON.parse(text);
+      } catch (error) {
+        console.error('Text parse error:', error);
+        return NextResponse.json({ error: 'Invalid request format' }, { status: 400 });
+      }
+    }
+    
     const { imageUrl, qrText, overlay = true } = body;
     
     if (!imageUrl || !qrText) {

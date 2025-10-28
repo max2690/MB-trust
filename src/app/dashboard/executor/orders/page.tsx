@@ -60,7 +60,7 @@ export default function AvailableOrdersPage() {
         },
         body: JSON.stringify({
           orderId,
-          executorId: 'temp-executor-id', // В реальном приложении будет из сессии
+          executorId: 'test-executor-1', // Используем ID тестового исполнителя из create-test-accounts.mjs
           description: 'Взял задание в работу'
         }),
       })

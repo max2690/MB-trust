@@ -89,7 +89,7 @@ export default function SignUpPage() {
                     <Badge variant="secondary">Мгновенно</Badge>
                   </div>
                 </div>
-                <Button className="w-full mt-4" variant="gold">
+                <Button className="w-full mt-4" variant="default">
                   Заработать сейчас
                 </Button>
               </CardContent>

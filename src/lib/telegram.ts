@@ -89,6 +89,7 @@ export const sendVerificationCode = async (telegramId: string, code: string, typ
 };
 
 // Отправка уведомления о заказе
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sendOrderNotification = async (telegramId: string, orderData: any) => {
   try {
     // Проверяем, что это не тестовый ID
@@ -123,6 +124,7 @@ export const sendOrderNotification = async (telegramId: string, orderData: any) 
 };
 
 // Отправка уведомления о выполнении
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sendExecutionNotification = async (telegramId: string, executionData: any) => {
   try {
     // Проверяем, что это не тестовый ID

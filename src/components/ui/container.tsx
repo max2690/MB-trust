@@ -1,7 +1,11 @@
-import React from 'react'
+﻿/** @cursor NO_LAYOUT_CHANGES */
+import { cn } from "@/lib/cn";
 
-const Container: React.FC<React.PropsWithChildren<{className?: string}>> = ({ children, className = '' }) => {
-	return <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
+export function Container({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={cn("container mx-auto px-4 sm:px-6 lg:px-8", className)} {...props}>
+      {children}
+    </div>
+  );
 }
-
-export default Container
+export default Container;

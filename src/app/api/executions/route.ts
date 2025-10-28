@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Лимиты по уровням
-    const levelLimits = {
+    const levelLimits: Record<string, number> = {
       NOVICE: 5,
       VERIFIED: 10,
       REFERRAL: 15,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     };
 
     const currentExecutions = dailyLimit?.executionsCount || 0;
-    const maxExecutions = levelLimits[executor.level];
+    const maxExecutions = levelLimits[executor.level || 'NOVICE'] || 5;
 
     if (currentExecutions >= maxExecutions) {
       return NextResponse.json({ 

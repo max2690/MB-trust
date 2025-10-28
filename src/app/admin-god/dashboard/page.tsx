@@ -50,8 +50,11 @@ export default function AdminGodDashboard() {
   const [error, setError] = useState('');
   const [showCreateAdmin, setShowCreateAdmin] = useState(false);
   const [showBlockUsers, setShowBlockUsers] = useState(false);
+  const [showBalanceTest, setShowBalanceTest] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [blockReason, setBlockReason] = useState('');
+  const [balanceTestUser, setBalanceTestUser] = useState('');
+  const [balanceTestAmount, setBalanceTestAmount] = useState('');
   const [newAdmin, setNewAdmin] = useState({
     login: '',
     password: '',
@@ -249,6 +252,9 @@ export default function AdminGodDashboard() {
             <Button onClick={() => setShowBlockUsers(true)} variant="outline">
               Блокировать пользователей
             </Button>
+            <Button onClick={() => setShowBalanceTest(true)} variant="outline">
+              💰 Тест пополнения
+            </Button>
             <Button onClick={handleLogout} variant="destructive">
               Выйти
             </Button>
@@ -352,6 +358,79 @@ export default function AdminGodDashboard() {
                 </Button>
               </div>
             </form>
+          </Card>
+        )}
+
+        {/* Balance Test Modal */}
+        {showBalanceTest && (
+          <Card className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Тест пополнения баланса</h2>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="balanceUser">ID пользователя</Label>
+                <Input
+                  id="balanceUser"
+                  value={balanceTestUser}
+                  onChange={(e) => setBalanceTestUser(e.target.value)}
+                  placeholder="Введите ID пользователя"
+                />
+              </div>
+              <div>
+                <Label htmlFor="balanceAmount">Сумма пополнения</Label>
+                <Input
+                  id="balanceAmount"
+                  type="number"
+                  value={balanceTestAmount}
+                  onChange={(e) => setBalanceTestAmount(e.target.value)}
+                  placeholder="Введите сумму"
+                />
+              </div>
+              <div className="flex space-x-4">
+                <Button onClick={async () => {
+                  try {
+                    // Получаем текущий баланс пользователя
+                    const userResponse = await fetch(`/api/admin/users?id=${balanceTestUser}`);
+                    const userData = await userResponse.json();
+                    
+                    if (!userData.success) {
+                      alert('Пользователь не найден');
+                      return;
+                    }
+                    
+                    const currentBalance = userData.user.balance || 0;
+                    const newBalance = currentBalance + parseFloat(balanceTestAmount);
+                    
+                    const response = await fetch('/api/admin/users', {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        userId: balanceTestUser,
+                        updates: { balance: newBalance }
+                      })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                      alert(`Баланс успешно пополнен на ${balanceTestAmount}₽\nНовый баланс: ${newBalance}₽`);
+                      setShowBalanceTest(false);
+                      setBalanceTestUser('');
+                      setBalanceTestAmount('');
+                      fetchData();
+                    } else {
+                      alert(data.error || 'Ошибка пополнения баланса');
+                    }
+                  } catch (err) {
+                    console.error('Error:', err);
+                    alert('Ошибка сети');
+                  }
+                }} disabled={!balanceTestUser || !balanceTestAmount}>
+                  Пополнить баланс
+                </Button>
+                <Button variant="outline" onClick={() => setShowBalanceTest(false)}>
+                  Отмена
+                </Button>
+              </div>
+            </div>
           </Card>
         )}
 

@@ -47,6 +47,7 @@ export const sendSMS = async (phone: string, code: string, type: 'admin' | 'user
 };
 
 // Отправка SMS уведомления о заказе
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sendOrderSMS = async (phone: string, orderData: any) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`
@@ -93,6 +94,7 @@ export const sendOrderSMS = async (phone: string, orderData: any) => {
 };
 
 // Отправка SMS уведомления о выполнении
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sendExecutionSMS = async (phone: string, executionData: any) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`
@@ -226,7 +228,7 @@ export const normalizePhone = (phone: string): string => {
   return cleanPhone;
 };
 
-export default {
+const smsModule = {
   sendSMS,
   sendOrderSMS,
   sendExecutionSMS,
@@ -234,4 +236,6 @@ export default {
   isValidPhone,
   normalizePhone
 };
+
+export default smsModule;
 

@@ -156,7 +156,7 @@ export default function ExecutorSignUpPage() {
               </span>
             </div>
 
-            <Button className="w-full" variant="gold">
+            <Button className="w-full" variant="default">
               Создать аккаунт исполнителя
             </Button>
 

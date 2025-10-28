@@ -1,389 +1,308 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { ArrowRight, Users, DollarSign, Target, Shield, Zap, Play, Download, Smartphone } from 'lucide-react'
+import type { Metadata } from "next";
+import Link from "next/link";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "MB-Trust — первый доверительный маркетинг",
+  description:
+    "MB-Trust — платформа доверительного (трастового) маркетинга: честные задания в соцсетях, выплаты исполнителям, рост узнаваемости брендов для бизнеса.",
+  openGraph: {
+    title: "MB-Trust — первый доверительный маркетинг",
+    description:
+      "Зарабатывай на сарафанном радио или продвигай бренд через реальных людей. Антифрод, верификация, аналитика.",
+    url: "http://localhost:3000/",
+    siteName: "MB-Trust",
+    type: "website",
+  },
+  robots: { index: true, follow: true },
+};
+
+const levels = [
+  { name: "Novice", percent: 40, note: "Стартовый уровень" },
+  { name: "Verified", percent: 50, note: "Верификация пройдена" },
+  { name: "Referral+", percent: 60, note: "Рефералы и активность" },
+  { name: "Top", percent: 80, note: "Высший уровень доверия" },
+];
+
+export default function Landing() {
   return (
-    <div className="min-h-screen bg-mb-black text-mb-white">
-      {/* Header */}
-      <header className="border-b border-mb-gray/20 bg-mb-black/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-mb-turquoise to-mb-gold rounded-lg flex items-center justify-center mb-text-glow">
-              <span className="text-mb-black font-bold text-sm">MB</span>
+    <main className="min-h-screen bg-[#0B0B0F] text-[#F2F2F2]">
+      {/* Санити-тест */}
+      <div className="p-6 mb-4 font-semibold text-center text-black bg-emerald-500 rounded-2xl">
+        Tailwind работает ✔
+      </div>
+      
+      {/* HERO */}
+      <section className="flex overflow-hidden relative items-center min-h-screen border-b border-gray-200 border-white/5 dark:border-white/5">
+        {/* Фоновое видео */}
+        <div className="absolute inset-0 z-0">
+          <video
+            className="object-cover absolute inset-0 w-full h-full opacity-30"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/videos/poster.jpg"
+          >
+            <source src="/videos/mb-trust-hero-video.mp4" type="video/mp4" />
+          </video>
+          {/* Overlay для затемнения */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/80 via-[#0B0B0F]/60 to-[#0B0B0F]/80"></div>
+        </div>
+
+        <div className="relative z-10 px-4 py-16 mx-auto w-full max-w-6xl sm:px-6 sm:py-24">
+          <div className="flex flex-col gap-6 items-center text-center">
+            {/* Логотип MB-Trust большими буквами */}
+            <div className="flex gap-3 items-center mb-4">
+              <img 
+                src="/logo/mb-trust-logo.png" 
+                alt="MB-Trust" 
+                className="w-auto h-12"
+              />
+              <span className="text-5xl font-bold bg-gradient-to-r from-[#00E1B4] to-[#00E1B4] bg-clip-text text-transparent tracking-wider">
+                MB-TRUST
+              </span>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-mb-turquoise to-mb-gold bg-clip-text text-transparent">
-              MB-TRUST
+            
+            <span className="inline-flex gap-2 items-center px-3 py-1 text-sm text-gray-600 rounded-full border border-gray-300 border-white/10 dark:border-white/10 text-white/70 dark:text-white/70">
+              <span className="text-[#00E1B4]">•</span> первый доверительный маркетинг
             </span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Link href="/quick-access">
-              <Button variant="ghost" className="text-mb-turquoise">
-                🚀 Быстрый доступ
-              </Button>
-            </Link>
-            <Link href="/auth/signin">
-              <Button variant="ghost">Войти</Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button>Начать</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center mb-bg-animated">
-        <div className="max-w-4xl mx-auto animate-fade-in">
-          <Badge variant="gold" className="mb-6 text-sm px-4 py-2 animate-float">
-            💎 Доверие — новая валюта
-          </Badge>
-          <h1 className="text-6xl md:text-7xl font-bold mb-8 mb-gradient-text mb-text-glow animate-slide-up">
-            Доверие — новая валюта
-          </h1>
-          <p className="text-xl text-mb-gray mb-10 max-w-3xl mx-auto leading-relaxed animate-slide-up">
-            MB-TRUST помогает создателям и брендам честно договариваться и зарабатывать: 
-            размещай задания, выбирай исполнителей, фиксируй результат. Прозрачно. Без лишних слов.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8 animate-scale-in">
-            <Link href="/auth/signup?role=executor">
-              <Button size="xl" className="w-full sm:w-auto">
-                Заработать сейчас
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/auth/signup?role=customer">
-              <Button size="xl" variant="outline" className="w-full sm:w-auto">
-                Разместить задание
-                <Target className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-          <p className="text-base text-mb-gray/80 animate-fade-in">
-            Бесплатно до 3 задач • Мгновенная регистрация • Вывод на карту/СБП
-          </p>
-        </div>
-      </section>
-
-      {/* Video Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="relative rounded-xl overflow-hidden bg-mb-black/50 border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 p-8">
-            <div className="flex items-center justify-center mb-4">
-              <Play className="h-16 w-16 text-mb-turquoise mb-text-glow" />
-            </div>
-            <h3 className="text-2xl font-bold mb-4">Посмотри как это работает</h3>
-            <p className="text-mb-gray mb-6">
-              Видео от Sora покажет вам всю мощь платформы MB-TRUST
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+              Реклама, которой{" "}
+              <span className="text-[#00E1B4]">доверяют люди</span>
+            </h1>
+            <p className="max-w-3xl text-base text-gray-600 drop-shadow-lg text-white/90 dark:text-white/90 sm:text-lg">
+              MB-Trust — платформа, где бренды размещают задания на продвижение,
+              а реальные пользователи публикуют сторис и посты в своих соцсетях,
+              получая честные выплаты. Прозрачно. Легально. Эффективно.
             </p>
-            <div className="relative rounded-lg overflow-hidden">
-              <video 
-                className="w-full h-auto rounded-lg"
-                controls
-                poster="/videos/poster.jpg"
-                preload="metadata"
+
+            <div className="grid grid-cols-1 gap-3 mt-2 sm:grid-cols-2">
+              <Link
+                href="/auth/signup?role=executor"
+                className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] dark:text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition"
               >
-                <source src="/videos/mb-trust-hero-video.mp4" type="video/mp4" />
-                Ваш браузер не поддерживает видео.
-              </video>
-              <div className="absolute inset-0 bg-gradient-to-t from-mb-black/50 to-transparent pointer-events-none"></div>
+                Я исполнитель
+              </Link>
+              <Link
+                href="/auth/signup?role=customer"
+                className="px-5 py-3 font-semibold rounded-xl border border-gray-300 transition border-white/15 dark:border-white/15 hover:border-white/30 dark:hover:border-white/30 hover:border-gray-400"
+              >
+                Я бизнес
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Уже доверяют MB-TRUST</h2>
-          <p className="text-mb-gray">
-            Более <span className="text-mb-turquoise font-bold">12,000</span> создателей и <span className="text-mb-gold font-bold">1,800</span> брендов
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-60">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-mb-gray/10 rounded-lg p-6 text-center">
-              <div className="w-16 h-16 bg-mb-gray/20 rounded-lg mx-auto mb-4"></div>
-              <p className="text-sm text-mb-gray">Партнер {i}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Как это работает</h2>
-          <p className="text-mb-gray max-w-2xl mx-auto">
-            Простая и прозрачная система для всех участников экосистемы
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow hover:border-mb-turquoise/50 transition-all duration-200">
-            <CardHeader className="text-center">
-              <div className="w-12 h-12 bg-mb-turquoise/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                <Users className="h-6 w-6 text-mb-turquoise" />
-              </div>
-              <CardTitle className="text-xl">1. Выбираешь роль</CardTitle>
-              <CardDescription>
-                Заказчик или исполнитель — определяешь свою позицию в экосистеме
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-mb-gray">
-                <li>• Заказчик: размещает задания</li>
-                <li>• Исполнитель: выполняет задания</li>
-                <li>• Можно совмещать роли</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow hover:border-mb-turquoise/50 transition-all duration-200">
-            <CardHeader className="text-center">
-              <div className="w-12 h-12 bg-mb-gold/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                <Target className="h-6 w-6 text-mb-gold" />
-              </div>
-              <CardTitle className="text-xl">2. Создаёшь задачу</CardTitle>
-              <CardDescription>
-                Формат, площадки, дедлайн, бюджет — всё прозрачно
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-mb-gray">
-                <li>• Чёткое техническое задание</li>
-                <li>• Выбор площадок (TG, VK, IG, YT)</li>
-                <li>• Фиксированный бюджет</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-mb-gray/30 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow hover:border-mb-turquoise/50 transition-all duration-200">
-            <CardHeader className="text-center">
-              <div className="w-12 h-12 bg-mb-turquoise/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                <Shield className="h-6 w-6 text-mb-turquoise" />
-              </div>
-              <CardTitle className="text-xl">3. Фиксируешь результат</CardTitle>
-              <CardDescription>
-                Ссылки, скриншоты, автопроверки — получаешь оплату
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-mb-gray">
-                <li>• Автоматическая проверка</li>
-                <li>• Прозрачная аналитика</li>
-                <li>• Мгновенные выплаты</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Features for Customers */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold mb-6">Для заказчиков</h2>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-mb-turquoise rounded-full flex items-center justify-center mt-1">
-                  <Target className="h-3 w-3 text-mb-black" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Прозрачные задания</h3>
-                  <p className="text-mb-gray text-sm">Форматы, ссылки, площадки (TG, VK, IG, YouTube, WhatsApp и др.)</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-mb-turquoise rounded-full flex items-center justify-center mt-1">
-                  <Shield className="h-3 w-3 text-mb-black" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Фрод-фильтр</h3>
-                  <p className="text-mb-gray text-sm">Исключаем «пустые» сторис/ботов, следим за уникальностью аудитории</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-mb-turquoise rounded-full flex items-center justify-center mt-1">
-                  <Zap className="h-3 w-3 text-mb-black" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Дашборд эффективности</h3>
-                  <p className="text-mb-gray text-sm">Клики, покрытия, стоимость действия</p>
-                </div>
-              </div>
-            </div>
-            <Link href="/auth/signup?role=customer" className="inline-block mt-6">
-              <Button size="lg">Разместить задание</Button>
-            </Link>
+      {/* О ПРОЕКТЕ / ТРАСТ-МАРКЕТИНГ */}
+      <section className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="p-6 rounded-2xl border bg-white/5 border-white/10">
+            <h2 className="mb-3 text-xl font-semibold sm:text-2xl">
+              Что такое MB-Trust?
+            </h2>
+            <p className="text-white/80">
+              Экосистема доверительного продвижения. Бренды создают задания на
+              публикации (сторис, посты, репосты) в соцсетях, а пользователи
+              берут их в работу. Мы фиксируем результат, считаем переходы и
+              конверсии, защищаем от фрода и обеспечиваем выплаты.
+            </p>
           </div>
-          <div className="bg-gradient-to-br from-mb-turquoise/10 to-mb-gold/10 rounded-xl p-8">
-            <div className="space-y-4">
-              <div className="bg-mb-black/50 rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Пример задания</h4>
-                <p className="text-sm text-mb-gray">Сторис с промокодом для интернет-магазина</p>
-                <div className="flex items-center justify-between mt-3">
-                  <Badge variant="secondary">Instagram</Badge>
-                  <span className="text-mb-gold font-bold">500₽</span>
-                </div>
-              </div>
-              <div className="bg-mb-black/50 rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Результат</h4>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-mb-gray">Клики:</span>
-                  <span className="text-mb-turquoise font-bold">127</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-mb-gray">CTR:</span>
-                  <span className="text-mb-gold font-bold">3.2%</span>
-                </div>
-              </div>
-            </div>
+
+          <div className="p-6 rounded-2xl border bg-white/5 border-white/10">
+            <h2 className="mb-3 text-xl font-semibold sm:text-2xl">
+              Трастовый маркетинг и сила сарафанного радио
+            </h2>
+            <ul className="space-y-2 text-white/85">
+              <li>• Люди доверяют людям, а не баннерам и таргету.</li>
+              <li>• Рекомендация знакомого повышает конверсию в 2–5 раз.</li>
+              <li>• Платёж за реальные публикации и переходы, а не «показы».</li>
+              <li>• Верификация, антифрод и понятная аналитика.</li>
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Features for Executors */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="bg-gradient-to-br from-mb-gold/10 to-mb-turquoise/10 rounded-xl p-8 order-2 lg:order-1">
-            <div className="space-y-4">
-              <div className="bg-mb-black/50 rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Уровни доверия</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-mb-gray">Новичок:</span>
-                    <span className="text-mb-turquoise font-bold">40%</span>
+      {/* ДЛЯ ИСПОЛНИТЕЛЕЙ */}
+      <section className="border-t bg-white/5 border-white/5">
+        <div className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
+          <div className="grid gap-10 items-start lg:grid-cols-2">
+            <div>
+              <h3 className="mb-3 text-2xl font-semibold">Исполнителям</h3>
+              <p className="mb-5 text-white/80">
+                Публикуйте задания и получайте до{" "}
+                <span className="text-[#00E1B4] font-semibold">80%</span> от
+                стоимости. Чем выше доверие — тем больше доход.
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {levels.map((l) => (
+                  <div
+                    key={l.name}
+                    className="p-4 text-center rounded-xl border bg-white/5 border-white/10"
+                  >
+                    <div className="text-sm text-white/70">{l.name}</div>
+                    <div className="text-2xl font-bold">{l.percent}%</div>
+                    <div className="text-xs text-white/60">{l.note}</div>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-mb-gray">Проверенный:</span>
-                    <span className="text-mb-turquoise font-bold">50%</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-mb-gray">Топ:</span>
-                    <span className="text-mb-gold font-bold">80%</span>
-                  </div>
-                </div>
+                ))}
               </div>
-              <div className="bg-mb-black/50 rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Заработок</h4>
-                <div className="text-2xl font-bold text-mb-gold mb-1">2,400₽</div>
-                <p className="text-sm text-mb-gray">за последние 7 дней</p>
+
+              <p className="mt-5 text-white/85">
+                При активной работе на нескольких площадках реально
+                зарабатывать{" "}
+                <span className="font-semibold text-[#FFD65A]">
+                  50 000 ₽ и больше в месяц
+                </span>
+                . Выплаты — по модели самозанятых (легально и прозрачно).
+              </p>
+
+              <div className="flex gap-3 mt-6">
+                <Link
+                  href="/auth/signup?role=executor"
+                  className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] dark:text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition"
+                >
+                  Стать исполнителем
+                </Link>
+                <Link
+                  href="/dashboard/executor"
+                  className="px-5 py-3 font-semibold rounded-xl border border-gray-300 transition border-white/15 dark:border-white/15 hover:border-white/30 dark:hover:border-white/30 hover:border-gray-400"
+                >
+                  Как это работает?
+                </Link>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl border bg-white/5 border-white/10">
+              <h4 className="mb-3 font-semibold">Пример дохода</h4>
+              <ul className="space-y-2 text-white/85">
+                <li>• Цена одной сторис: 100 ₽</li>
+                <li>• В день: 10 сторис × 3 площадки = 30 публикаций</li>
+                <li>• Уровень TOP (80%): 30 × 100 × 0.8 = 2 400 ₽/день</li>
+                <li>• Месяц (30 дней): ≈ 72 000 ₽ брутто*</li>
+              </ul>
+              <p className="mt-3 text-xs text-gray-400 text-white/60 dark:text-white/60">
+                *Факт зависит от доступных заданий и лимитов/уровня.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ДЛЯ БИЗНЕСА */}
+      <section className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
+        <div className="p-6 rounded-2xl border bg-white/5 border-white/10">
+          <h3 className="mb-3 text-2xl font-semibold">Бизнесу</h3>
+          <p className="mb-4 text-white/85">
+            Сделайте бренд более узнаваемым: заявляйте о себе через
+            сарафанное радио. Запустите кампанию за 5 минут — задания увидят
+            сотни реальных людей, а вы получите статистику по переходам и лидам.
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-[#00E1B4] font-semibold">Ниже CPL</div>
+              <div className="text-sm text-white/70">
+                Цена за лид на 30–50% ниже таргета и закупа у блогеров.
+              </div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-[#00E1B4] font-semibold">Доверие</div>
+              <div className="text-sm text-white/70">
+                Рекомендации реальных людей конвертят лучше баннеров.
+              </div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-[#00E1B4] font-semibold">Антифрод</div>
+              <div className="text-sm text-white/70">
+                Верификация, лимиты, AI-проверки и отчётность.
+              </div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-[#00E1B4] font-semibold">Контроль</div>
+              <div className="text-sm text-white/70">
+                Гибкие кампании: неделя, две, разовые посты, QR и UTM.
               </div>
             </div>
           </div>
-          <div className="order-1 lg:order-2">
-            <h2 className="text-3xl font-bold mb-6">Для исполнителей</h2>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-mb-gold rounded-full flex items-center justify-center mt-1">
-                  <Target className="h-3 w-3 text-mb-black" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Выбирай подходящие задачи</h3>
-                  <p className="text-mb-gray text-sm">По платформам и цене</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-mb-gold rounded-full flex items-center justify-center mt-1">
-                  <Zap className="h-3 w-3 text-mb-black" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Расти по уровням доверия</h3>
-                  <p className="text-mb-gray text-sm">KYC, история сделок, рейтинг. Больше доверия — больше доход</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-mb-gold rounded-full flex items-center justify-center mt-1">
-                  <DollarSign className="h-3 w-3 text-mb-black" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Мгновенные выплаты</h3>
-                  <p className="text-mb-gray text-sm">СБП/карта, самозанятые/ИП</p>
-                </div>
-              </div>
-            </div>
-            <Link href="/auth/signup?role=executor" className="inline-block mt-6">
-              <Button size="lg" variant="gold">Заработать сейчас</Button>
+
+          <div className="flex gap-3 mt-6">
+            <Link
+              href="/auth/signup?role=customer"
+              className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] dark:text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition"
+            >
+              Разместить задание
+            </Link>
+            <Link
+              href="/customer/dashboard"
+              className="px-5 py-3 font-semibold rounded-xl border border-gray-300 transition border-white/15 dark:border-white/15 hover:border-white/30 dark:hover:border-white/30 hover:border-gray-400"
+            >
+              Руководство для бизнеса
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Download Apps */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Скачай приложение</h2>
-          <p className="text-mb-gray max-w-2xl mx-auto">
-            Получи доступ к заданиям и заработку прямо с телефона
+      {/* РЕКВИЗИТЫ */}
+      <section className="border-t bg-white/3 border-white/5">
+        <div className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
+          <h3 className="mb-4 text-2xl font-semibold">Реквизиты компании</h3>
+
+          <div className="grid gap-4 text-gray-600 sm:grid-cols-2 lg:grid-cols-3 text-white/85 dark:text-white/85">
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-sm text-white/60">Организация</div>
+              <div className="font-semibold">ООО «МБ-ТРАСТ»</div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-sm text-white/60">ИНН / ОГРН</div>
+              <div className="font-semibold">ИНН 0000000000 • ОГРН 0000000000000</div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-sm text-white/60">Юр. адрес</div>
+              <div className="font-semibold">000000, г. Город, ул. Улица, д. 1</div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-sm text-white/60">Р/с, Банк, БИК</div>
+              <div className="font-semibold">Р/с 40702… • ПАО «Пример» • БИК 044525000</div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-sm text-white/60">Поддержка</div>
+              <div className="font-semibold">support@mb-trust.example • +7 (000) 000-00-00</div>
+            </div>
+            <div className="p-4 rounded-xl border bg-white/5 border-white/10">
+              <div className="text-sm text-white/60">Время работы</div>
+              <div className="font-semibold">Пн–Пт, 10:00–19:00 (МСК)</div>
+            </div>
+          </div>
+
+          <p className="mt-6 text-xs text-gray-400 text-white/50 dark:text-white/50">
+            *Замените данные на фактические реквизиты перед запуском.
           </p>
         </div>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link href="#" className="flex items-center space-x-3 bg-mb-black/50 border border-mb-gray/20 rounded-lg px-6 py-4 hover:shadow-glow transition-all duration-200">
-            <Smartphone className="h-8 w-8 text-mb-turquoise" />
-            <div className="text-left">
-              <div className="text-sm text-mb-gray">Скачать для</div>
-              <div className="font-semibold">Android</div>
-            </div>
-          </Link>
-          
-          <Link href="#" className="flex items-center space-x-3 bg-mb-black/50 border border-mb-gray/20 rounded-lg px-6 py-4 hover:shadow-glow transition-all duration-200">
-            <Smartphone className="h-8 w-8 text-mb-turquoise" />
-            <div className="text-left">
-              <div className="text-sm text-mb-gray">Скачать для</div>
-              <div className="font-semibold">iOS</div>
-            </div>
-          </Link>
-        </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Готовы начать?</h2>
-          <p className="text-mb-gray mb-8">
-            Присоединяйтесь к революции в маркетинге уже сегодня
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/customer/dashboard">
-              <Button size="lg" className="w-full sm:w-auto">
-                Дашборд заказчика
-              </Button>
-            </Link>
-            <Link href="/executor/dashboard">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Дашборд исполнителя
-              </Button>
-            </Link>
-            <Link href="/admin">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Админ-панель
-              </Button>
-            </Link>
+      {/* FOOTER */}
+      <footer className="border-t border-gray-200 border-white/10 dark:border-white/10">
+        <div className="flex flex-col gap-3 justify-between items-center px-4 py-10 mx-auto max-w-6xl sm:px-6 sm:flex-row">
+          <div className="text-sm text-gray-500 text-white/60 dark:text-white/60">
+            © {new Date().getFullYear()} MB-Trust. Все права защищены.
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-mb-gray/20 bg-mb-black/50 py-12">
-        <div className="container mx-auto px-4 text-center text-mb-gray">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-6 h-6 bg-gradient-to-r from-mb-turquoise to-mb-gold rounded flex items-center justify-center">
-              <span className="text-mb-black font-bold text-xs">MB</span>
-            </div>
-            <span className="font-semibold">MB-TRUST</span>
-          </div>
-          <p>&copy; 2024 MB-TRUST. Все права защищены.</p>
-          <div className="mt-4 space-x-6 text-sm">
-            <Link href="/privacy" className="hover:text-mb-turquoise">Политика конфиденциальности</Link>
-            <Link href="/terms" className="hover:text-mb-turquoise">Условия использования</Link>
-            <Link href="/contact" className="hover:text-mb-turquoise">Контакты</Link>
+          <div className="flex gap-3">
+            <Link
+              href="/privacy"
+              className="text-sm transition text-white/70 hover:text-white"
+            >
+              Политика конфиденциальности
+            </Link>
+            <Link
+              href="/terms"
+              className="text-sm transition text-white/70 hover:text-white"
+            >
+              Пользовательское соглашение
+            </Link>
           </div>
         </div>
       </footer>
-    </div>
-  )
+    </main>
+  );
 }

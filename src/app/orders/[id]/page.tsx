@@ -7,8 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { OrderCard } from '@/components/business/OrderCard';
 
-export default function OrderDetailsPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const router = useRouter();
   const [order, setOrder] = useState<any | null>(null);
   const [executions, setExecutions] = useState<any[]>([]);

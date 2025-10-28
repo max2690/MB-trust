@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // POST /api/test/orders/[id]/accept - Принятие тестового заказа
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const orderId = params.id;
+    const { id: orderId } = await params;
 
     // Проверяем существование тестового заказа
     const order = await prisma.order.findUnique({
@@ -69,10 +69,10 @@ export async function POST(
 // GET /api/test/orders/[id] - Получить информацию о тестовом заказе
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const orderId = params.id;
+    const { id: orderId } = await params;
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },

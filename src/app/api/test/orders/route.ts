@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description: description || 'Тестовое описание заказа',
-        socialNetwork: platform.toUpperCase(),
+        socialNetwork: platform.toUpperCase() as any,
         quantity: parseInt(quantity),
         pricePerStory: parseFloat(pricePerStory),
         totalReward: parseFloat(pricePerStory) * parseInt(quantity),
@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
         budget: parseFloat(pricePerStory) * parseInt(quantity), // Старое поле для совместимости
         reward: parseFloat(pricePerStory), // Старое поле для совместимости
         region: 'Тестовый регион',
-        socialNetwork: platform.toUpperCase() as any,
         qrCode: `test_qr_${Date.now()}`,
         qrCodeExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 дней
         deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 дня

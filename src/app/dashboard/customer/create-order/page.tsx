@@ -38,14 +38,17 @@ export default function CreateOrderPage() {
           // totalReward is the total amount paid by the customer
           totalReward: parseFloat(formData.reward),
           reward: parseFloat((parseFloat(formData.reward) / parseInt(formData.quantity || '1')).toString()),
-          customerId: 'temp-customer-id' // В реальном приложении будет из сессии
+          customerId: 'temp-customer' // В реальном приложении будет из сессии
         }),
       })
 
       const result = await response.json()
 
       if (result.success) {
-        router.push(`/orders/${result.order.id}`)
+        // API возвращает orders (может быть одним заказом или массивом)
+        const order = result.orders
+        const orderId = Array.isArray(order) ? order[0].id : order.id
+        router.push(`/orders/${orderId}`)
       } else {
         alert('Ошибка создания заказа: ' + result.error)
       }

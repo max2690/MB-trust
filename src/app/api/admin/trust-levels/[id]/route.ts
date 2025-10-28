@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // PUT /api/admin/trust-levels/[id] - Обновить уровень доверия
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const levelId = params.id;
+    const { id: levelId } = await params;
     const {
       name,
       displayName,
@@ -65,10 +65,10 @@ export async function PUT(
 // DELETE /api/admin/trust-levels/[id] - Удалить уровень доверия
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const levelId = params.id;
+    const { id: levelId } = await params;
 
     // Проверяем существование уровня
     const existingLevel = await prisma.trustLevel.findUnique({

@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme colors - only one theme */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 255 255 255; /* White background for inputs */
+    --input-text: 0 0 0; /* Black text in inputs */
+    --ring: 217.2 91.2% 59.8%;
+    --radius: 0.75rem;
+    
+    /* Brand colors for dark theme */
+    --brand-primary: 217.2 91.2% 59.8%;
+    --brand-secondary: 262.1 83.3% 57.8%;
+    --brand-accent: 142.1 76.2% 36.3%;
+    --brand-success: 142.1 76.2% 36.3%;
+    --brand-warning: 38 92% 50%;
+    --brand-error: 0 62.8% 30.6%;
+    
+    /* Gradients for dark theme */
+    --gradient-primary: linear-gradient(135deg, hsl(217.2 91.2% 59.8%) 0%, hsl(262.1 83.3% 57.8%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(142.1 76.2% 36.3%) 0%, hsl(217.2 91.2% 59.8%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(0 62.8% 30.6%) 100%);
+    
+    /* Professional shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Professional Light Theme Components */
+  .glass {
+    @apply backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10;
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl p-6 shadow-2xl hover:bg-white/20 dark:hover:bg-black/20 transition-all duration-300;
+  }
+  
+  /* Professional Light Theme Cards */
+  .card-light {
+    @apply bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  .card-light-hover {
+    @apply card-light hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300;
+  }
+  
+  /* Professional Light Theme Buttons */
+  .btn-light-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-300 ease-out;
+  }
+  
+  .btn-light-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold py-3 px-6 rounded-xl shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-300 ease-out;
+  }
+  
+  .btn-light-outline {
+    @apply bg-transparent hover:bg-gray-50 text-gray-700 font-semibold py-3 px-6 rounded-xl border border-gray-300 hover:border-gray-400 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-300 ease-out;
+  }
+  
+  /* Input with black text */
+  .input-modern {
+    @apply bg-white border border-input rounded-xl px-4 py-3 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-300;
+  }
+  
+  /* Make all inputs white background with black text */
+  input {
+    background-color: white;
+    color: black;
+  }
+  
+  textarea {
+    background-color: white;
+    color: black;
+  }
+  
+  select {
+    background-color: white;
+    color: black;
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  /* Brand buttons */
+  .btn-primary {
+    @apply gradient-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out;
+  }
+  
+  .btn-ghost {
+    @apply bg-transparent hover:bg-accent text-accent-foreground font-semibold py-3 px-6 rounded-xl transition-all duration-300 ease-out;
+  }
+  
+  /* Cards */
+  .card-modern {
+    @apply bg-card text-card-foreground rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border/50;
+  }
+  
+  /* Inputs */
+  .input-modern {
+    @apply bg-background border border-input rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-300;
+  }
+  
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+  
+  /* Hover effects */
+  .hover-lift {
+    @apply transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary/25;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
+}

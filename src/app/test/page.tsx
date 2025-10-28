@@ -156,7 +156,7 @@ export default function TestPage() {
               
               <div>
                 <Label>Платформа</Label>
-                <Select value={formData.platform} onValueChange={(value) => setFormData({ ...formData, platform: value })}>
+                <Select value={formData.platform} onValueChange={(value: string) => setFormData({ ...formData, platform: value })}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Выберите платформу" />
                   </SelectTrigger>

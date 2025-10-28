@@ -99,7 +99,7 @@ export default function ExecutorDashboard() {
         },
         body: JSON.stringify({
           orderId,
-          executorId: 'temp-executor'
+          executorId: 'test-executor-1' // Используем ID тестового исполнителя из create-test-accounts.mjs
         }),
       });
 
