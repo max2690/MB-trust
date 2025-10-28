@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// TODO: Install yookassa package when ready
+// npm install @yoomoney/yookassa-sdk
+
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 

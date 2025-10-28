@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
+import { Search } from 'lucide-react';
 
 interface Location {
   country: string | null;
@@ -24,6 +25,9 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
   const [countryInput, setCountryInput] = useState('');
   const [regionInput, setRegionInput] = useState('');
   const [cityInput, setCityInput] = useState('');
+  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+  const [regionSuggestions, setRegionSuggestions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Инициализация
   useEffect(() => {
@@ -169,10 +173,40 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
     updateLocation(selectedCountry, region, null, 'region');
   };
 
-  const handleCityInputChange = (value: string) => {
+  const handleCityInputChange = async (value: string) => {
     setCityInput(value);
     setSelectedCity(value);
+    
+    // Автодополнение через DaData
+    if (value.length >= 2) {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/location/autocomplete?q=${encodeURIComponent(value)}&type=city`);
+        const data = await response.json();
+        setCitySuggestions(data.suggestions?.map((s: any) => s.city || s.value) || []);
+      } catch (error) {
+        console.error('Ошибка автодополнения:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
     updateLocation(selectedCountry, null, value, 'city');
+  };
+
+  const handleRegionInputChange = async (value: string) => {
+    setRegionInput(value);
+    
+    // Автодополнение для регионов
+    if (value.length >= 2) {
+      try {
+        const response = await fetch(`/api/location/autocomplete?q=${encodeURIComponent(value)}&type=region`);
+        const data = await response.json();
+        setRegionSuggestions(data.suggestions?.map((s: any) => s.region || s.value) || []);
+      } catch (error) {
+        console.error('Ошибка автодополнения регионов:', error);
+      }
+    }
   };
 
   return (
@@ -233,19 +267,35 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
       {/* Выбор региона */}
       {scope === 'region' && (
         <div>
-          <Input
-            value={regionInput}
-            onChange={(e) => setRegionInput(e.target.value)}
-            onFocus={(e) => e.target.style.display = 'none'}
-            placeholder="Начните вводить регион или край..."
-            list="regions-list"
-            className="w-full"
-          />
-          <datalist id="regions-list">
-            {regions.map((region) => (
-              <option key={region} value={region} />
-            ))}
-          </datalist>
+            <div className="relative">
+              <Input
+                value={regionInput}
+                onChange={(e) => {
+                  setRegionInput(e.target.value);
+                  handleRegionInputChange(e.target.value);
+                }}
+                placeholder="Начните вводить регион или край..."
+                className="w-full"
+              />
+              {regionSuggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-mb-black border border-mb-gray/20 rounded-lg max-h-48 overflow-auto">
+                  {regionSuggestions.map((region, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setRegionInput(region);
+                        setRegionSuggestions([]);
+                        handleRegionSelect(region);
+                      }}
+                      className="w-full px-4 py-2 text-left hover:bg-mb-gray/10 transition-colors"
+                    >
+                      {region}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           
           {regionInput && (
             <div className="mt-2 p-2 bg-mb-black/50 rounded">
@@ -260,12 +310,37 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
       {/* Выбор города */}
       {scope === 'city' && (
         <div>
-          <Input
-            value={cityInput}
-            onChange={(e) => handleCityInputChange(e.target.value)}
-            placeholder="Введите город (например, Москва, Воронеж, Краснодар)"
-            className="w-full"
-          />
+          <div className="relative">
+            <Input
+              value={cityInput}
+              onChange={(e) => handleCityInputChange(e.target.value)}
+              placeholder="Введите город (например, Москва, Воронеж, Краснодар)"
+              className="w-full pr-10"
+            />
+            {isLoading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="animate-spin h-4 w-4 border-2 border-mb-turquoise border-t-transparent rounded-full" />
+              </div>
+            )}
+            {citySuggestions.length > 0 && !isLoading && (
+              <div className="absolute z-10 w-full mt-1 bg-mb-black border border-mb-gray/20 rounded-lg max-h-48 overflow-auto">
+                {citySuggestions.map((city, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      setCityInput(city);
+                      setCitySuggestions([]);
+                      handleCityInputChange(city);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-mb-gray/10 transition-colors"
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           
           {cityInput && (
             <div className="mt-2 p-2 bg-mb-black/50 rounded">
