@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import Container from '@/components/ui/container'
 import { OrderCard } from '@/components/business/OrderCard'
+import { BalanceCard } from '@/components/payment/BalanceCard'
 import { ArrowLeft, Plus, Target, DollarSign, Users, TrendingUp, Settings, LogOut } from 'lucide-react'
 
 export default function CustomerDashboardPage() {
@@ -137,34 +138,12 @@ export default function CustomerDashboardPage() {
   </div>
         
   {/* Balance */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Баланс</CardTitle>
-            <CardDescription>Управляйте своими средствами</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-mb-gray">Доступно</p>
-                <p className="text-3xl font-bold text-mb-gold">7,600₽</p>
-              </div>
-              <Button variant="outline">
-                <DollarSign className="h-4 w-4 mr-2" />
-                Пополнить
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex justify-between">
-                <span className="text-mb-gray">Зарезервировано:</span>
-                <span className="text-mb-white">1,500₽</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-mb-gray">Всего пополнено:</span>
-                <span className="text-mb-white">10,000₽</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <BalanceCard 
+          balance={7600} 
+          reservedBalance={1500} 
+          totalEarned={10000}
+          role="customer"
+        />
       </Container>
     </div>
   )

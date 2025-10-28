@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import Container from '@/components/ui/container'
+import { LocationSelector } from '@/components/business/LocationSelector'
 import { ArrowLeft, Target, DollarSign, MapPin, Users, Calendar } from 'lucide-react'
 
 export default function CreateOrderPage() {
@@ -20,6 +21,11 @@ export default function CreateOrderPage() {
     socialNetwork: 'INSTAGRAM',
     targetUrl: '',
     deadline: ''
+  })
+  const [location, setLocation] = useState<{ country: string | null; region: string | null; city: string | null }>({
+    country: 'Россия',
+    region: null,
+    city: null
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -38,7 +44,10 @@ export default function CreateOrderPage() {
           // totalReward is the total amount paid by the customer
           totalReward: parseFloat(formData.reward),
           reward: parseFloat((parseFloat(formData.reward) / parseInt(formData.quantity || '1')).toString()),
-          customerId: 'temp-customer' // В реальном приложении будет из сессии
+          customerId: 'temp-customer', // В реальном приложении будет из сессии
+          targetCountry: location.country,
+          targetRegion: location.region,
+          targetCity: location.city
         }),
       })
 
@@ -168,12 +177,12 @@ export default function CreateOrderPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Регион</label>
-                  <Input
-                    value={formData.region}
-                    onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                    placeholder="Москва, Россия"
-                    required
+                  <label className="block text-sm font-medium mb-2">Геолокация задания</label>
+                  <LocationSelector 
+                    onLocationChange={(loc) => {
+                      setLocation(loc);
+                      setFormData({ ...formData, region: loc.region || loc.city || loc.country || 'Россия' });
+                    }}
                   />
                 </div>
 

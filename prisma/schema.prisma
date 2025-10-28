@@ -19,6 +19,12 @@ model User {
   passwordHash  String
   country       String
   region        String
+  city          String?   // Город пользователя
+  timezone      String?   // Часовой пояс (например, "Europe/Moscow")
+  registrationIp String?  // IP при регистрации
+  lastLoginIp   String?   // IP последнего входа
+  registrationCity String? // Город при регистрации
+  
   role          UserRole  @default(EXECUTOR)
   level         UserLevel @default(NOVICE)
   balance       Float     @default(0)
@@ -142,6 +148,11 @@ model Order {
   totalReward   Float?      // Общая сумма кампании
   region        String
   socialNetwork SocialNetwork
+  
+  // Целевая геолокация для задания
+  targetCountry String?    // Страна для задания (например, "Россия")
+  targetRegion  String?    // Регион/край для задания (например, "Московская область", "Краснодарский край")
+  targetCity    String?    // Город для задания (например, "Москва", "Воронеж")
   qrCode        String      @unique
   qrCodeExpiry  DateTime
   processedImageUrl String? // URL обработанного изображения с QR кодом
@@ -197,6 +208,12 @@ model Execution {
   reviewedAt        DateTime?        // Время проверки
   moderatorId       String?          // ID модератора, который проверил
   moderatorComment  String?          // Комментарий модератора
+  
+  // Геолокация для антифрода
+  screenshotUploadedAt DateTime?    // Время загрузки скриншота
+  executorIp          String?       // IP исполнителя при загрузке
+  executorCity        String?       // Город исполнителя
+  executorTimezone    String?       // Часовой пояс исполнителя
   
   // Тестовый режим
   isTestExecution Boolean @default(false)

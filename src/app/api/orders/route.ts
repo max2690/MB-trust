@@ -27,7 +27,11 @@ export async function POST(request: NextRequest) {
       dailyDistribution = {},
       autoDistribution = true,
       refundOnFailure = true,
-      refundDeadline
+      refundDeadline,
+      // Геолокация
+      targetCountry,
+      targetRegion,
+      targetCity
     } = body;
 
     // Валидация
@@ -102,8 +106,11 @@ export async function POST(request: NextRequest) {
           customer: {
             connect: { id: customerId || 'temp-customer' }
           },
-          region: 'Россия',
+          region: targetRegion || targetCity || 'Россия',
           socialNetwork,
+          targetCountry: targetCountry || 'Россия',
+          targetRegion: targetRegion || null,
+          targetCity: targetCity || null,
           qrCode: qrCodeId,
           qrCodeExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           processedImageUrl: finalProcessedImageUrl,
@@ -147,10 +154,44 @@ export async function GET(request: NextRequest) {
     let orders;
 
     if (role === 'executor') {
-      // Заказы доступные для исполнителей
+      // Получаем информацию о пользователе
+      const user = userId ? await prisma.user.findUnique({
+        where: { id: userId },
+        select: { city: true, region: true, country: true }
+      }) : null;
+
+      // Формируем условия для геофильтрации
+      const geoFilters: any[] = [];
+      
+      if (user) {
+        // Поиск заказов, где целевая геолокация включает пользователя
+        const conditions: any[] = [
+          // Вся страна
+          { targetCountry: user.country, targetRegion: null, targetCity: null },
+          // Регион пользователя
+          { targetRegion: user.region, targetCity: null },
+          // Конкретный город пользователя
+          { targetCity: user.city }
+        ];
+        
+        // Если у пользователя есть город, добавляем поиск по городу
+        if (user.city) {
+          conditions.push({ targetCity: user.city });
+        }
+        
+        // Если у пользователя есть регион, добавляем поиск по региону
+        if (user.region) {
+          conditions.push({ targetRegion: user.region });
+        }
+        
+        geoFilters.push({ OR: conditions });
+      }
+
+      // Заказы доступные для исполнителей с геофильтрацией
       orders = await prisma.order.findMany({
         where: {
-          status: 'PENDING'
+          status: 'PENDING',
+          ...(geoFilters.length > 0 ? { AND: geoFilters } : {})
         },
         include: {
           customer: {

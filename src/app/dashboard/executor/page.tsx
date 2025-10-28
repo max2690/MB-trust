@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { BalanceCard } from '@/components/payment/BalanceCard'
 import { ArrowLeft, Target, DollarSign, Users, TrendingUp, Settings, LogOut, Star } from 'lucide-react'
 
 export default function ExecutorDashboardPage() {
@@ -160,34 +161,12 @@ export default function ExecutorDashboardPage() {
         </div>
 
         {/* Balance */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Баланс</CardTitle>
-            <CardDescription>Управляйте своими заработками</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-mb-gray">Доступно к выводу</p>
-                <p className="text-3xl font-bold text-mb-gold">2,400₽</p>
-              </div>
-              <Button variant="outline">
-                <DollarSign className="h-4 w-4 mr-2" />
-                Вывести
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex justify-between">
-                <span className="text-mb-gray">В обработке:</span>
-                <span className="text-mb-white">0₽</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-mb-gray">Всего заработано:</span>
-                <span className="text-mb-white">2,400₽</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <BalanceCard 
+          balance={2400} 
+          reservedBalance={0} 
+          totalEarned={2400}
+          role="executor"
+        />
       </div>
     </div>
   )
