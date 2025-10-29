@@ -203,7 +203,7 @@ export default function ExecutorDashboard() {
               </h2>
               <ScreenshotUpload 
                 orderId={selectedOrder.id}
-                executorId="temp-executor"
+                executorId="test-executor-1"
                 onUpload={handleScreenshotUpload}
               />
               <Button 
