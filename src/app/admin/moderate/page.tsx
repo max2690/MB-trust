@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Check, X, Eye, Users, DollarSign, Calendar } from 'lucide-react'
+import { ArrowLeft, Check, X, Users, DollarSign, Calendar } from 'lucide-react'
 
 interface Execution {
   id: string
@@ -19,6 +19,8 @@ interface Execution {
     description: string
     budget: number
     socialNetwork: string
+    reward?: number
+    totalReward?: number
   }
   executor: {
     id: string
@@ -170,7 +172,7 @@ export default function ModerationPage() {
                         </div>
                         <div>
                           <p className="text-sm text-mb-gray">Бюджет</p>
-                          <p className="font-semibold text-mb-gold">{(execution.order as any).reward ?? (execution.order as any).totalReward ?? 0}₽</p>
+                          <p className="font-semibold text-mb-gold">{execution.order.reward ?? execution.order.totalReward ?? execution.order.budget ?? 0}₽</p>
                         </div>
                       </div>
 

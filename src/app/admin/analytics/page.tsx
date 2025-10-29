@@ -47,7 +47,7 @@ export default function AnalyticsPage() {
       } else {
         setError(result.error || 'Ошибка загрузки статистики');
       }
-    } catch (err) {
+    } catch {
       setError('Ошибка сети');
     } finally {
       setLoading(false);

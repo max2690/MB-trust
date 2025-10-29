@@ -233,7 +233,7 @@ export default function AdminDashboard() {
               <Card className="p-6">
                 <h3 className="text-xl font-bold text-white mb-4">Топ исполнители</h3>
                 <div className="space-y-2">
-                  {stats.topUsers.executors.slice(0, 5).map((executor, index) => (
+                  {stats.topUsers.executors.slice(0, 5).map((executor) => (
                     <div key={executor.name} className="flex justify-between items-center">
                       <div>
                         <span className="text-white">{executor.name}</span>
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
               <Card className="p-6">
                 <h3 className="text-xl font-bold text-white mb-4">Топ заказчики</h3>
                 <div className="space-y-2">
-                  {stats.topUsers.customers.slice(0, 5).map((customer, index) => (
+                  {stats.topUsers.customers.slice(0, 5).map((customer) => (
                     <div key={customer.name} className="flex justify-between items-center">
                       <div>
                         <span className="text-white">{customer.name}</span>

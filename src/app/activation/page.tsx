@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ export default function ActivationPage() {
   const [activationId, setActivationId] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [status, setStatus] = useState<'idle' | 'generating' | 'uploading' | 'verifying' | 'completed'>('idle');
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{success?: boolean; message?: string; data?: unknown} | null>(null);
 
   const generateQRCode = async () => {
     if (!userId) {
