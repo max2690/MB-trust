@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import Container from '@/components/ui/container'
 import { LocationSelector } from '@/components/business/LocationSelector'
-import { ArrowLeft, Target, DollarSign, MapPin, Users, Calendar } from 'lucide-react'
+import { CustomerImageUpload } from '@/components/business/CustomerImageUpload'
+import { ArrowLeft, Target, DollarSign, MapPin, Users, Calendar, Upload } from 'lucide-react'
 
 export default function CreateOrderPage() {
   const router = useRouter()
@@ -27,6 +28,9 @@ export default function CreateOrderPage() {
     region: null,
     city: null
   })
+  const [processedImageUrl, setProcessedImageUrl] = useState<string>('')
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
+  const [orderId, setOrderId] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -225,6 +229,27 @@ export default function CreateOrderPage() {
                     </button>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Upload className="h-5 w-5 text-mb-turquoise" />
+                  <span>Загрузка креатива (опционально)</span>
+                </CardTitle>
+                <CardDescription>
+                  Загрузите свою картинку. QR-код будет автоматически добавлен в угол.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CustomerImageUpload 
+                  onImageProcessed={(processedUrl, qrUrl, orderIdFromUpload) => {
+                    setProcessedImageUrl(processedUrl);
+                    setQrCodeUrl(qrUrl);
+                    setOrderId(orderIdFromUpload);
+                  }}
+                />
               </CardContent>
             </Card>
 

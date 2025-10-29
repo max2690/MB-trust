@@ -22,11 +22,32 @@ export async function POST(request: NextRequest) {
       }
     } else if (contentType?.includes('multipart/form-data')) {
       const formData = await request.formData();
-      body = {
-        imageUrl: formData.get('imageUrl'),
-        qrText: formData.get('qrText'),
-        overlay: formData.get('overlay') === 'true'
-      };
+      const imageFile = formData.get('image') as File;
+      
+      if (imageFile) {
+        // Сохраняем файл временно
+        const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        
+        const buffer = Buffer.from(await imageFile.arrayBuffer());
+        const fileName = `temp-${Date.now()}.${imageFile.name.split('.').pop()}`;
+        const filePath = path.join(uploadsDir, fileName);
+        fs.writeFileSync(filePath, buffer);
+        
+        body = {
+          imageUrl: `/uploads/${fileName}`,
+          qrText: `order-${nanoid()}`,
+          overlay: formData.get('overlay') !== 'false'
+        };
+      } else {
+        body = {
+          imageUrl: formData.get('imageUrl') as string,
+          qrText: formData.get('qrText') as string,
+          overlay: formData.get('overlay') === 'true'
+        };
+      }
     } else {
       // Попробуем как текст
       const text = await request.text();
@@ -40,7 +61,7 @@ export async function POST(request: NextRequest) {
     
     const { imageUrl, qrText, overlay = true } = body;
     
-    if (!imageUrl || !qrText) {
+    if (!imageUrl) {
       return NextResponse.json({ error: 'Не все поля заполнены' }, { status: 400 });
     }
 
@@ -50,11 +71,18 @@ export async function POST(request: NextRequest) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
 
-    // 1. Загружаем изображение по URL
+    // 1. Загружаем изображение по URL или читаем из файла
     let imageBuffer;
     try {
-      const imageResponse = await fetch(imageUrl);
-      imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+      if (imageUrl.startsWith('/uploads/')) {
+        // Читаем локальный файл
+        const localPath = path.join(process.cwd(), 'public', imageUrl);
+        imageBuffer = fs.readFileSync(localPath);
+      } else {
+        // Загружаем по URL
+        const imageResponse = await fetch(imageUrl);
+        imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+      }
     } catch (error) {
       return NextResponse.json({ error: 'Не удалось загрузить изображение' }, { status: 400 });
     }
