@@ -66,7 +66,7 @@ export default function ExecutorDashboard() {
       }
 
       // Загружаем мои выполнения
-      const executionsResponse = await fetch('/api/executions?executorId=temp-executor');
+      const executionsResponse = await fetch('/api/executions?executorId=test-executor-1');
       const executionsData = await executionsResponse.json();
       if (executionsData.success) {
         setMyExecutions(executionsData.executions);
@@ -142,7 +142,7 @@ export default function ExecutorDashboard() {
           },
           body: JSON.stringify({
             orderId,
-            executorId: 'temp-executor',
+            executorId: 'test-executor-1',
             screenshotUrl: uploadData.screenshotUrl,
             status: 'PENDING_REVIEW'
           }),
