@@ -58,9 +58,15 @@ model User {
   telegramWalletVerified Boolean @default(false)
   telegramWalletVerifiedAt DateTime?
   
+  // СБП (Система быстрых платежей)
+  sbpPhone         String?   // Телефон для СБП
+  sbpVerified      Boolean   @default(false) // Верификация СБП
+  cardNumber       String?   // Последние 4 цифры карты
+  
   // Настройки выплат
   preferredPayoutMethod PayoutMethod @default(TELEGRAM_WALLET)
   maxPayoutAmount      Decimal?
+  autoPayoutEnabled    Boolean  @default(false) // Автоматическая выплата
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -538,6 +544,31 @@ enum PayoutMethod {
   TELEGRAM_WALLET
 }
 
+// API ключи для внешних приложений
+model ApiKey {
+  id          String   @id @default(cuid())
+  key         String   @unique // API ключ (случайная строка)
+  name        String   // Название приложения
+  description String?  // Описание
+  
+  // Права доступа
+  permissions Json     // JSON массив разрешений: ["orders:read", "executions:write"]
+  
+  // Статистика
+  lastUsed    DateTime?  // Последнее использование
+  requestCount Int      @default(0) // Количество запросов
+  
+  // Статус
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime? // Дата истечения
+  
+  createdBy   String?  // ID пользователя, создавшего ключ
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("api_keys")
+}
+ 
 // Статусы выплат
 enum PayoutStatus {
   PENDING
