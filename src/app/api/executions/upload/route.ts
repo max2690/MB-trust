@@ -56,10 +56,32 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Автоматическая AI проверка скриншота
+    try {
+      const verifyResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/ai/verify-screenshot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          screenshotId: execution.id,
+          orderId: orderId
+        })
+      });
+      
+      const verifyResult = await verifyResponse.json();
+      
+      if (verifyResult.success) {
+        console.log(`✅ AI проверка завершена для выполнения ${execution.id}:`, verifyResult.verification.approved ? 'ОДОБРЕНО' : 'ОТКЛОНЕНО');
+      }
+    } catch (error) {
+      console.error('⚠️ Ошибка автоматической AI проверки:', error);
+      // Не падаем, если AI проверка не удалась - модератор проверит вручную
+    }
+
     return NextResponse.json({
       screenshotUrl,
       executionId: execution.id,
-      success: true
+      success: true,
+      message: 'Скриншот загружен. Идет автоматическая проверка...'
     });
     
   } catch (error) {
