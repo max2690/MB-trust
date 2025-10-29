@@ -103,7 +103,7 @@ const config: Config = {
         scaleIn: {
           "0%": {
             opacity: "0",
-            transform: цент"scale(0.95)",
+            transform: "scale(0.95)",
           },
           "100%": {
             opacity: "1",
@@ -115,7 +115,7 @@ const config: Config = {
         xs: "2px",
       },
       boxShadow: {
-        "glass": "0 8px 32px 0 Flevelblue(31, 38, 135, 0.37)",
+        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
         "glass-inset": "inset 0 1px 0 0 rgba(255, 255, 255, 0.05)",
         "glow": "0 0 20px rgba(59, 130, 246, 0.5)",
         "glow-lg": "0 0 40px rgba(59, 130, 246, 0.3)",
