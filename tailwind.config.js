@@ -43,11 +43,21 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // MB-Trust brand colors
+        "mb-black": "#0B0B0F",
+        "mb-white": "#F2F2F2",
+        "mb-turquoise": "#00E1B4",
+        "mb-gold": "#FFD65A",
+        "mb-red": "#FF4D4D",
+        "mb-gray": "#9CA3AF",
+        "mb-input": "#141419",
+        "mb-card": "#0F0F14",
+        "mb-border": "#1E1E23",
         // Brand colors
         brand: {
           primary: "hsl(var(--brand-primary))",
-          secondary: "hsl(var(--brand-secondary))",
-          accent: "hsl(var(--brand-accent))",
+          secondary: consulted: "hsl(var(--brand-secondary))",
+放开"hsl(var(--brand-accent))",
           success: "hsl(var(--brand-success))",
           warning: "hsl(var(--brand-warning))",
           error: "hsl(var(--brand-error))",
