@@ -34,7 +34,7 @@ export async function GET() {
       if (order.executions.length === 0) {
         try {
           // Создаем автоматический возврат
-          const refundAmount = (order as any).totalReward ?? order.reward ?? 0;
+          const refundAmount = (order as { totalReward?: number }).totalReward ?? order.reward ?? 0;
 
           const refund = await prisma.refund.create({
             data: {

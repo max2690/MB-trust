@@ -1,5 +1,6 @@
 'use client';
 
+import Img from "../ui/Img";
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -41,12 +42,9 @@ export function ScreenshotUpload({ orderId, executorId, onUpload }: ScreenshotUp
         
         {file && (
           <div className="text-center">
-            <img 
-              src={URL.createObjectURL(file)} 
-              alt={`Preview ${file.name}`} 
-              className="mx-auto max-w-full h-48 object-cover rounded" 
-              loading="lazy"
-            />
+            <div className="relative mx-auto h-48 w-full max-w-xl">
+              <Img src={URL.createObjectURL(file)} alt={`Preview ${file.name}`} fill />
+            </div>
           </div>
         )}
         

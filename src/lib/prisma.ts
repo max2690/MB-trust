@@ -7,7 +7,7 @@ const createClient = () =>
   });
 
 declare global {
-  var prisma: PrismaClient | undefined; // eslint-disable-line no-var
+  var prisma: PrismaClient | undefined;  
 }
 
 export const prisma = global.prisma ?? createClient();

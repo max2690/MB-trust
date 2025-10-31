@@ -217,7 +217,7 @@ export function DepositForm({ currentBalance, onDepositComplete, onClose }: Depo
 
           {/* Мелкий шрифт */}
           <p className="text-xs text-center text-mb-gray/70">
-            Нажимая "Пополнить", вы соглашаетесь с условиями использования платформы
+            Нажимая &quot;Пополнить&quot;, вы соглашаетесь с условиями использования платформы
           </p>
         </CardContent>
       </Card>

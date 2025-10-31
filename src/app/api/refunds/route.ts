@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { RefundStatus, ExecutionStatus, OrderStatus, PaymentStatus } from '@prisma/client';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,8 +11,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const customerId = searchParams.get('customerId');
 
-    const where: any = {};
-    if (status) where.status = status;
+    const where: { status?: RefundStatus; customerId?: string } = {};
+    if (status) where.status = status as RefundStatus;
     if (customerId) where.customerId = customerId;
 
     const refunds = await prisma.refund.findMany({
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
       where: { id: orderId },
       include: {
         executions: {
-          where: { status: 'COMPLETED' }
+          where: { status: ExecutionStatus.COMPLETED }
         }
       }
     });
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверяем, что заказ не выполнен
-    if (order.status === 'COMPLETED' || order.executions.length > 0) {
+    if (order.status === OrderStatus.COMPLETED || order.executions.length > 0) {
       return NextResponse.json({ error: 'Заказ уже выполнен' }, { status: 400 });
     }
 
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Проверяем, что возврат еще не создан
     const existingRefund = await prisma.refund.findFirst({
-      where: { orderId, status: { not: 'CANCELLED' } }
+      where: { orderId, status: { not: RefundStatus.CANCELLED } }
     });
 
     if (existingRefund) {
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Создаем возврат — используем totalReward (сумма заказа) если доступна, иначе reward
-    const refundAmount = (order as any).totalReward ?? order.reward ?? 0;
+    const refundAmount = (order as { totalReward?: number }).totalReward ?? order.reward ?? 0;
 
     const refund = await prisma.refund.create({
       data: {
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
         customerId,
         amount: refundAmount,
         reason,
-        status: 'PENDING'
+        status: RefundStatus.PENDING
       }
     });
 
@@ -136,7 +137,7 @@ export async function PUT(request: NextRequest) {
     });
 
     // Если возврат завершен, возвращаем деньги на счет заказчика
-    if (status === 'COMPLETED') {
+    if (status === RefundStatus.COMPLETED) {
       await prisma.user.update({
         where: { id: refund.customerId },
         data: {
@@ -152,7 +153,7 @@ export async function PUT(request: NextRequest) {
           userId: refund.customerId,
           amount: refund.amount,
           type: 'DEPOSIT',
-          status: 'COMPLETED',
+          status: PaymentStatus.COMPLETED,
           description: `Возврат за невыполненный заказ: ${refund.order.title}`
         }
       });

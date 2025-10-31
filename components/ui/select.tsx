@@ -50,8 +50,8 @@ const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
 >(({ className, ...props }, ref) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { value, ...restProps } = props;
+   
+  const restProps = props;
   return (
     <SelectPrimitive.ScrollDownButton
       ref={ref}

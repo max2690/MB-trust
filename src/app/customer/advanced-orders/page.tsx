@@ -5,10 +5,15 @@ import { AdvancedOrderForm } from '@/components/business/AdvancedOrderForm';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-export default function AdvancedOrdersPage() {
-  const [createdOrders, setCreatedOrders] = useState<any[]>([]);
+type CreatedOrder = { id: string; title: string; reward?: number; totalReward?: number } | CreatedOrder[];
 
-  const handleOrderSubmit = async (orderData: any) => {
+export default function AdvancedOrdersPage() {
+  const [createdOrders, setCreatedOrders] = useState<CreatedOrder[]>([]);
+
+  const handleOrderSubmit = async (orderData: {
+    totalCost: number;
+    [key: string]: unknown;
+  }) => {
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -24,7 +29,7 @@ export default function AdvancedOrdersPage() {
       const data = await response.json();
       
       if (data.success) {
-        setCreatedOrders(prev => [...prev, data.orders]);
+        setCreatedOrders(prev => [...prev, data.orders as CreatedOrder]);
         alert(`Заказ успешно создан! Стоимость: ${orderData.totalCost.toLocaleString()}₽`);
       } else {
         alert(`Ошибка создания заказа: ${data.error}`);
@@ -55,7 +60,7 @@ export default function AdvancedOrdersPage() {
             </Card>
           </div>
 
-          <AdvancedOrderForm onSubmit={handleOrderSubmit} />
+          <AdvancedOrderForm onSubmit={(d) => { void handleOrderSubmit(d as unknown as { totalCost: number; [key: string]: unknown }); }} />
 
           {/* Созданные заказы */}
           {createdOrders.length > 0 && (
@@ -68,7 +73,7 @@ export default function AdvancedOrdersPage() {
                       Группа заказов #{index + 1}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Array.isArray(orderGroup) ? orderGroup.map((order: any) => (
+                      {Array.isArray(orderGroup) ? orderGroup.map((order: { id: string; title: string; totalReward?: number; reward?: number }) => (
                         <div key={order.id} className="p-4 border border-mb-gray/20 rounded">
                           <div className="text-white font-medium">{order.title}</div>
                           <div className="text-mb-gray text-sm">ID: {order.id}</div>
@@ -77,10 +82,17 @@ export default function AdvancedOrdersPage() {
                         </div>
                       )) : (
                         <div className="p-4 border border-mb-gray/20 rounded">
-                          <div className="text-white font-medium">{orderGroup.title}</div>
-                          <div className="text-mb-gray text-sm">ID: {orderGroup.id}</div>
-                          <div className="text-mb-turquoise">Общая сумма: {orderGroup.totalReward ?? orderGroup.reward ?? 0}₽</div>
-                          <div className="text-mb-gold">Вознаграждение: {orderGroup.reward}₽</div>
+                          {(() => {
+                            const og = orderGroup as { id: string; title: string; totalReward?: number; reward?: number };
+                            return (
+                              <>
+                                <div className="text-white font-medium">{og.title}</div>
+                                <div className="text-mb-gray text-sm">ID: {og.id}</div>
+                                <div className="text-mb-turquoise">Общая сумма: {og.totalReward ?? og.reward ?? 0}₽</div>
+                                <div className="text-mb-gold">Вознаграждение: {og.reward}₽</div>
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>

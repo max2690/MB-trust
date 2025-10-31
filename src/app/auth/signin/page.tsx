@@ -1,10 +1,57 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, Mail, Lock } from 'lucide-react'
 
+type TelegramUser = { id?: number };
+type TelegramWebApp = { initDataUnsafe?: { user?: TelegramUser } };
+type WindowWithTelegram = Window & { Telegram?: { WebApp?: TelegramWebApp } };
+
 export default function SignInPage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [telegramLoading, setTelegramLoading] = useState(false)
+
+  const handleTelegramLogin = async () => {
+    setTelegramLoading(true)
+    try {
+      if (typeof window !== 'undefined' && (window as unknown as WindowWithTelegram).Telegram?.WebApp) {
+        const tg = (window as unknown as WindowWithTelegram).Telegram!.WebApp!
+        const user = tg.initDataUnsafe?.user
+        
+        if (user?.id) {
+          const response = await fetch(`/api/users?telegramId=${user.id}`)
+          const data = await response.json()
+          
+          if (!data.success || !data.user) {
+            router.push('/auth/signup?telegram=true')
+            return
+          }
+          
+          if (!data.user.isVerified) {
+            router.push(`/auth/verify?userId=${data.user.id}`)
+            return
+          }
+          
+          router.push(data.user.role === 'CUSTOMER' ? '/dashboard/customer' : '/executor/available')
+          return
+        }
+      }
+      
+      router.push('/auth/signup?method=telegram')
+    } catch (error) {
+      console.error('Ошибка входа через Telegram:', error)
+      router.push('/auth/signup?method=telegram')
+    } finally {
+      setTelegramLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-mb-black text-mb-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -102,11 +149,16 @@ export default function SignInPage() {
               </svg>
               Google
             </Button>
-            <Button variant="outline" className="w-full">
-              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M13.162 18.994c.609 0 .858-.406.858-.915v-2.66h1.717c.609 0 .858-.406.858-.915s-.249-.915-.858-.915h-1.717v-2.66c0-.509.249-.915.858-.915s.858.406.858.915v2.66h1.717c.609 0 .858-.406.858-.915s-.249-.915-.858-.915h-1.717v-2.66c0-.509-.249-.915-.858-.915s-.858.406-.858.915v2.66h-1.717c-.609 0-.858.406-.858.915s.249.915.858.915h1.717v2.66c0 .509.249.915.858.915z"/>
+            <Button 
+              variant="outline" 
+              className="w-full hover:shadow-lg hover:shadow-mb-turquoise/50 transition-all duration-300"
+              onClick={handleTelegramLogin}
+              disabled={telegramLoading}
+            >
+              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.158c-.169 0-3.225 1.482-4.562 2.093-.464.195-.881.195-1.345 0-1.337-.611-4.393-2.093-4.562-2.093-.231 0-.438.207-.438.438v8.807c0 .231.207.438.438.438.169 0 3.225-1.482 4.562-2.093.464-.195.881-.195 1.345 0 1.337.611 4.393 2.093 4.562 2.093.231 0 .438-.207.438-.438V8.596c0-.231-.207-.438-.438-.438z"/>
               </svg>
-              Telegram
+              {telegramLoading ? 'Загрузка...' : 'Telegram'}
             </Button>
           </div>
         </div>

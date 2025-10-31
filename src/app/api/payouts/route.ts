@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { PayoutMethod, PayoutStatus } from '@prisma/client';
 
 // POST /api/payouts/create - Создание выплаты
 export async function POST(request: NextRequest) {
@@ -15,13 +16,22 @@ export async function POST(request: NextRequest) {
 
     // Проверяем существование пользователя
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
+      select: { id: true, role: true, balance: true, isSelfEmployed: true, nalogVerificationStatus: true, telegramWalletVerified: true }
     });
 
     if (!user) {
       return NextResponse.json(
         { error: 'Пользователь не найден' },
         { status: 404 }
+      );
+    }
+
+    // Разрешаем выплаты только исполнителям
+    if (user.role !== 'EXECUTOR') {
+      return NextResponse.json(
+        { error: 'Выплаты доступны только исполнителям' },
+        { status: 403 }
       );
     }
 
@@ -57,13 +67,13 @@ export async function POST(request: NextRequest) {
       data: {
         userId: user.id,
         amount: parseFloat(amount),
-        method: method,
-        status: 'PENDING'
+        method: method as PayoutMethod,
+        status: PayoutStatus.PENDING
       }
     });
 
     // Обрабатываем выплату
-    await processPayout(payout);
+    await processPayout({ id: payout.id, userId: payout.userId, amount: Number(payout.amount) });
 
     return NextResponse.json({
       success: true,
@@ -86,9 +96,9 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId');
     const status = searchParams.get('status');
 
-    const where: any = {};
+    const where: { userId?: string; status?: PayoutStatus } = {};
     if (userId) where.userId = userId;
-    if (status) where.status = status;
+    if (status) where.status = status as PayoutStatus;
 
     const payouts = await prisma.payout.findMany({
       where,
@@ -118,7 +128,8 @@ export async function GET(request: NextRequest) {
 }
 
 // Обработка выплаты
-async function processPayout(payout: any) {
+type PayoutLite = { id: string; userId: string; amount: number };
+async function processPayout(payout: PayoutLite) {
   try {
     // Обновляем статус на "Обрабатывается"
     await prisma.payout.update({

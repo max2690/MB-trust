@@ -1,8 +1,18 @@
 ﻿/** @cursor NO_LAYOUT_CHANGES */
 import { cn } from "@/lib/cn";
 
+const badgeVariantAlias: Record<string, "default" | "gold" | "outline" | "destructive"> = {
+  default: "default",
+  primary: "default",
+  secondary: "outline",
+  ghost: "outline",
+  outline: "outline",
+  destructive: "destructive",
+  gold: "gold",
+};
+
 type Props = React.HTMLAttributes<HTMLDivElement> & {
-  variant?: "default" | "gold" | "outline" | "destructive";
+  variant?: keyof typeof badgeVariantAlias;
 };
 
 export function Badge({ variant = "default", className, ...props }: Props) {
@@ -15,7 +25,8 @@ export function Badge({ variant = "default", className, ...props }: Props) {
     destructive: "bg-mb-red text-mb-white"
   } as const;
   
+  const resolvedVariant = badgeVariantAlias[variant] ?? "default";
   return (
-    <div className={cn(base, variants[variant], className)} {...props} />
+    <div className={cn(base, variants[resolvedVariant], className)} {...props} />
   );
 }

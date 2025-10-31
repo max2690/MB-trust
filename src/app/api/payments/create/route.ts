@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Создаем URL для оплаты (заглушка)
-    const paymentUrl = createPaymentUrl(provider, payment.id, totalAmount, user);
+    const paymentUrl = createPaymentUrl(provider, payment.id, totalAmount);
 
     return NextResponse.json({
       success: true,
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function createPaymentUrl(provider: string, paymentId: string, amount: number, user: any) {
+function createPaymentUrl(provider: string, paymentId: string, amount: number) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   
   if (provider === 'yookassa') {

@@ -7,11 +7,14 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { OrderCard } from '@/components/business/OrderCard';
 
+type ExecItem = { id: string } & Record<string, unknown>;
+type OrderItem = { id: string; executions?: ExecItem[] } & Record<string, unknown>;
+
 export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
   const router = useRouter();
-  const [order, setOrder] = useState<any | null>(null);
-  const [executions, setExecutions] = useState<any[]>([]);
+  const [order, setOrder] = useState<OrderItem | null>(null);
+  const [executions, setExecutions] = useState<ExecItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -22,7 +25,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
         const res = await fetch('/api/orders');
         const data = await res.json();
         if (data.success && Array.isArray(data.orders)) {
-          const found = data.orders.find((o: any) => o.id === id);
+          const found = data.orders.find((o: OrderItem) => o.id === id);
           if (found) {
             setOrder(found);
             setExecutions(found.executions || []);
@@ -80,7 +83,10 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
         {/* Order Details */}
         <Card className="mb-6">
           <h2 className="text-2xl font-bold mb-4 text-white">Информация о заказе</h2>
-          <OrderCard order={order} onAccept={() => {}} compact />
+          {(() => {
+            const o = order as { id?: string; title?: string };
+            return <OrderCard order={{ id: o.id ?? 'unknown', title: o.title ?? 'Без названия' }} onAccept={() => {}} compact />;
+          })()}
         </Card>
 
         {/* Executions */}
@@ -90,9 +96,12 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
             <p className="text-mb-gray">Нет выполнений</p>
           ) : (
             <div className="space-y-4">
-              {executions.map((exec) => (
-                <OrderCard key={exec.id} order={{ ...order, ...exec }} onAccept={() => {}} compact />
-              ))}
+              {executions.map((exec) => {
+                const o = order as { id?: string; title?: string };
+                return (
+                  <OrderCard key={exec.id} order={{ id: o.id ?? 'unknown', title: o.title ?? 'Без названия' }} onAccept={() => {}} compact />
+                );
+              })}
             </div>
           )}
         </Card>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { PaymentStatus } from '@prisma/client'
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -48,9 +49,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
-    const status = searchParams.get('status')
+    const status = searchParams.get('status') as PaymentStatus | null
 
-    const where: any = {}
+    const where: { userId?: string; status?: PaymentStatus } = {}
     if (userId) where.userId = userId
     if (status) where.status = status
 
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { paymentId, status, transactionId } = body
+    const { paymentId, status, transactionId } = body as { paymentId: string; status: PaymentStatus; transactionId?: string }
 
     const payment = await prisma.payment.update({
       where: { id: paymentId },

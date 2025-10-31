@@ -1,11 +1,95 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, DollarSign, Mail, Lock, Phone, MapPin, Star } from 'lucide-react'
+import { TelegramVerification } from '@/components/verification/TelegramVerification'
 
 export default function ExecutorSignUpPage() {
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    region: '',
+    password: '',
+    confirmPassword: ''
+  })
+  const [userId, setUserId] = useState<string | null>(null)
+  const [isRegistered, setIsRegistered] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Пароли не совпадают')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          role: 'EXECUTOR',
+          country: 'Россия'
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Ошибка регистрации')
+      }
+
+      setUserId(data.user.id)
+      setIsRegistered(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка регистрации')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerified = async () => {
+    // После верификации перенаправляем на правильный дашборд
+    if (userId) {
+      try {
+        const res = await fetch(`/api/users?userId=${userId}`)
+        const data = await res.json()
+        
+        if (data.success && data.user) {
+          // Проверяем роль и перенаправляем
+          if (data.user.role === 'EXECUTOR') {
+            router.push('/executor/available')
+          } else if (data.user.role === 'CUSTOMER') {
+            router.push('/dashboard/customer')
+          } else {
+            router.push('/auth/signin')
+          }
+          return
+        }
+      } catch (error) {
+        console.error('Ошибка получения информации о пользователе:', error)
+      }
+    }
+    
+    // Fallback - перенаправляем на дашборд исполнителя по умолчанию
+    setTimeout(() => {
+      router.push('/executor/available')
+    }, 2000)
+  }
   return (
     <div className="min-h-screen bg-mb-black text-mb-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -44,27 +128,43 @@ export default function ExecutorSignUpPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-mb-white">Имя и фамилия</label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
-                <Input 
-                  type="text" 
-                  placeholder="Анна Петрова" 
-                  className="pl-10"
-                />
-              </div>
-            </div>
+            {isRegistered && userId ? (
+              <TelegramVerification userId={userId} onVerified={handleVerified} />
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="bg-mb-red/10 border border-mb-red/50 rounded-lg p-3 text-sm text-mb-red">
+                    {error}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-mb-white">Имя и фамилия</label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
+                    <Input 
+                      type="text" 
+                      placeholder="Анна Петрова" 
+                      className="pl-10"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-mb-white">Номер телефона</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
-                <Input 
-                  type="tel" 
-                  placeholder="+7 (999) 123-45-67" 
-                  className="pl-10"
-                />
+                    <Input 
+                      type="tel" 
+                      placeholder="+7 (999) 123-45-67" 
+                      className="pl-10"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      required
+                    />
               </div>
             </div>
 
@@ -72,11 +172,13 @@ export default function ExecutorSignUpPage() {
               <label className="text-sm font-medium text-mb-white">Email (необязательно)</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
-                <Input 
-                  type="email" 
-                  placeholder="anna@example.com" 
-                  className="pl-10"
-                />
+                    <Input 
+                      type="email" 
+                      placeholder="anna@example.com" 
+                      className="pl-10"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
               </div>
             </div>
 
@@ -84,11 +186,14 @@ export default function ExecutorSignUpPage() {
               <label className="text-sm font-medium text-mb-white">Регион</label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
-                <Input 
-                  type="text" 
-                  placeholder="Санкт-Петербург" 
-                  className="pl-10"
-                />
+                    <Input 
+                      type="text" 
+                      placeholder="Санкт-Петербург" 
+                      className="pl-10"
+                      value={formData.region}
+                      onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                      required
+                    />
               </div>
             </div>
 
@@ -96,11 +201,15 @@ export default function ExecutorSignUpPage() {
               <label className="text-sm font-medium text-mb-white">Пароль</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
-                <Input 
-                  type="password" 
-                  placeholder="Минимум 8 символов" 
-                  className="pl-10"
-                />
+                    <Input 
+                      type="password" 
+                      placeholder="Минимум 8 символов" 
+                      className="pl-10"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      required
+                      minLength={8}
+                    />
               </div>
             </div>
 
@@ -108,11 +217,15 @@ export default function ExecutorSignUpPage() {
               <label className="text-sm font-medium text-mb-white">Подтвердите пароль</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-mb-gray" />
-                <Input 
-                  type="password" 
-                  placeholder="Повторите пароль" 
-                  className="pl-10"
-                />
+                    <Input 
+                      type="password" 
+                      placeholder="Повторите пароль" 
+                      className="pl-10"
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      required
+                      minLength={8}
+                    />
               </div>
             </div>
 
@@ -156,9 +269,11 @@ export default function ExecutorSignUpPage() {
               </span>
             </div>
 
-            <Button className="w-full" variant="default">
-              Создать аккаунт исполнителя
-            </Button>
+                <Button type="submit" className="w-full" variant="default" disabled={loading}>
+                  {loading ? 'Создание аккаунта...' : 'Создать аккаунт исполнителя'}
+                </Button>
+              </form>
+            )}
 
             <div className="text-center text-sm text-mb-gray">
               <p>Уже есть аккаунт? <Link href="/auth/signin" className="text-mb-turquoise hover:underline">Войти</Link></p>

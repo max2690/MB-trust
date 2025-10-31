@@ -168,7 +168,7 @@ export default function AdminDashboard() {
             <Button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              variant={activeTab === tab ? 'default' : 'outline'}
+              variant={activeTab === tab ? 'primary' : 'outline'}
               className="capitalize"
             >
               {tab === 'overview' ? 'Обзор' : 

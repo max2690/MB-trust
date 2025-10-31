@@ -1,10 +1,22 @@
+"use client"
+
 import Link from 'next/link'
+import { useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Users, DollarSign } from 'lucide-react'
 
 export default function SignUpPage() {
+  const router = useRouter()
+  const sp = useSearchParams()
+
+  useEffect(() => {
+    const role = sp.get('role')
+    if (role === 'executor') router.replace('/auth/signup/executor')
+    if (role === 'customer' || role === 'business') router.replace('/auth/signup/customer')
+  }, [sp, router])
   return (
     <div className="min-h-screen bg-mb-black text-mb-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -31,7 +43,7 @@ export default function SignUpPage() {
         {/* Role Selection Cards */}
         <div className="space-y-4">
           <Link href="/auth/signup/customer">
-            <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200 cursor-pointer hover:scale-105">
+            <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200 ease-out cursor-pointer hover:scale-105">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-mb-turquoise/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-mb-turquoise" />
@@ -56,7 +68,7 @@ export default function SignUpPage() {
                     <Badge variant="secondary">20%</Badge>
                   </div>
                 </div>
-                <Button className="w-full mt-4">
+                <Button className="w-full mt-4 transition-all duration-200 ease-out">
                   Разместить задание
                 </Button>
               </CardContent>
@@ -64,7 +76,7 @@ export default function SignUpPage() {
           </Link>
 
           <Link href="/auth/signup/executor">
-            <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200 cursor-pointer hover:scale-105">
+            <Card className="border-0 shadow-lg hover:shadow-glow transition-all duration-200 ease-out cursor-pointer hover:scale-105">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-mb-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <DollarSign className="h-8 w-8 text-mb-gold" />
@@ -89,7 +101,7 @@ export default function SignUpPage() {
                     <Badge variant="secondary">Мгновенно</Badge>
                   </div>
                 </div>
-                <Button className="w-full mt-4" variant="default">
+                <Button className="w-full mt-4 transition-all duration-200 ease-out" variant="default">
                   Заработать сейчас
                 </Button>
               </CardContent>

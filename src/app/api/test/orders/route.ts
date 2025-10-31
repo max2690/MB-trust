@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { SocialNetwork, OrderStatus } from '@prisma/client';
 
 // POST /api/test/orders - Создание тестового заказа
 export async function POST(request: NextRequest) {
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description: description || 'Тестовое описание заказа',
-        socialNetwork: platform.toUpperCase() as any,
+        socialNetwork: (platform.toUpperCase() as keyof typeof SocialNetwork) as SocialNetwork,
         quantity: parseInt(quantity),
         pricePerStory: parseFloat(pricePerStory),
         totalReward: parseFloat(pricePerStory) * parseInt(quantity),
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
         qrCode: `test_qr_${Date.now()}`,
         qrCodeExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 дней
         deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 дня
-        status: 'PENDING',
+        status: OrderStatus.PENDING,
         isTestOrder: true,
         testMode: true,
         customerId: 'test-customer'
@@ -64,10 +65,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
-    const where: any = {
+    const where: { isTestOrder: boolean; status?: OrderStatus } = {
       isTestOrder: true
     };
-    if (status) where.status = status;
+    if (status) where.status = status as OrderStatus;
 
     const orders = await prisma.order.findMany({
       where,

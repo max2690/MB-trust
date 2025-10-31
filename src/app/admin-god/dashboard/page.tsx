@@ -42,7 +42,18 @@ export default function AdminGodDashboard() {
     console.log('🔥 DEV MODE: Прямой доступ к админ панели без авторизации');
   }
 
-  const [admin, setAdmin] = useState<any>(null);
+  const [admin, setAdmin] = useState<{
+    id: string;
+    login: string;
+    name: string;
+    role: string;
+    phone: string;
+    email: string;
+    telegramId: string;
+    isActive: boolean;
+    createdAt: string;
+    lastLogin: string;
+  } | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +80,7 @@ export default function AdminGodDashboard() {
   useEffect(() => {
     checkAuth();
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuth = async () => {
@@ -82,7 +94,10 @@ export default function AdminGodDashboard() {
         role: 'SUPER_ADMIN',
         phone: '89241242417',
         email: 'shveddamir@gmail.com',
-        isActive: true
+        telegramId: '',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
       });
       return;
     }
@@ -103,7 +118,7 @@ export default function AdminGodDashboard() {
         localStorage.removeItem('adminToken');
         router.push('/admin-god/login');
       }
-    } catch (err) {
+    } catch {
       localStorage.removeItem('adminToken');
       router.push('/admin-god/login');
     }
@@ -122,7 +137,7 @@ export default function AdminGodDashboard() {
 
       if (usersData.success) setUsers(usersData.users);
       if (adminsData.success) setAdmins(adminsData.admins);
-    } catch (err) {
+    } catch {
       setError('Ошибка загрузки данных');
     } finally {
       setLoading(false);
@@ -161,7 +176,7 @@ export default function AdminGodDashboard() {
       } else {
         setError(data.error || 'Ошибка создания админа');
       }
-    } catch (err) {
+    } catch {
       setError('Ошибка сети');
     } finally {
       setLoading(false);
@@ -191,7 +206,7 @@ export default function AdminGodDashboard() {
         const error = await response.json();
         setError(error.error || 'Ошибка блокировки');
       }
-    } catch (error) {
+    } catch {
       setError('Ошибка блокировки пользователей');
     }
   };
@@ -503,7 +518,7 @@ export default function AdminGodDashboard() {
                   <TableCell>{admin.email || '-'}</TableCell>
                   <TableCell>{admin.telegramId || '-'}</TableCell>
                   <TableCell>
-                    <Badge variant={admin.isActive ? 'default' : 'secondary'}>
+                    <Badge variant={admin.isActive ? 'default' : 'outline'}>
                       {admin.isActive ? 'Активен' : 'Заблокирован'}
                     </Badge>
                   </TableCell>
@@ -564,12 +579,12 @@ export default function AdminGodDashboard() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{user.level}</Badge>
+                    <Badge variant="outline">{user.level}</Badge>
                   </TableCell>
                   <TableCell>{user.balance}₽</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Badge variant={user.isVerified ? 'default' : 'secondary'}>
+                      <Badge variant={user.isVerified ? 'default' : 'outline'}>
                         {user.isVerified ? 'Верифицирован' : 'Не верифицирован'}
                       </Badge>
                       {user.isBlocked && (

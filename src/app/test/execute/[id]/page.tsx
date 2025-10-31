@@ -1,5 +1,6 @@
 'use client';
 
+import Img from "@/components/ui/Img";
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ interface TestOrder {
   pricePerStory: number;
   totalReward: number;
   status: string;
-  executions: any[];
+  executions: Array<{ id: string }>;
 }
 
 interface AIResult {
@@ -38,6 +39,7 @@ export default function TestExecutePage({ params }: { params: Promise<{ id: stri
   const [aiResults, setAiResults] = useState<AIResult[]>([]);
   const [uploading, setUploading] = useState(false);
 
+   
   useEffect(() => {
     fetchOrder();
   }, [id]);
@@ -236,13 +238,8 @@ export default function TestExecutePage({ params }: { params: Promise<{ id: stri
             
             {screenshots[currentStep] && (
               <div className="space-y-4">
-                <div>
-                  <img 
-                    src={screenshots[currentStep]} 
-                    alt={`Скриншот ${currentStep + 1}`}
-                    className="max-w-full h-auto rounded-lg border"
-                    style={{ maxHeight: '300px' }}
-                  />
+                <div className="relative w-full" style={{ maxWidth: 600, height: 300 }}>
+                  <Img src={screenshots[currentStep]} alt={`Скриншот ${currentStep + 1}`} fill />
                 </div>
                 
                 <div className="flex space-x-2">

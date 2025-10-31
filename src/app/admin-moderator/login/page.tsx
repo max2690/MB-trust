@@ -13,8 +13,10 @@ export default function AdminModeratorLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [verificationStep, setVerificationStep] = useState<'login' | 'sms' | 'email'>('login');
-  const [session, setSession] = useState<any>(null);
-  const [admin, setAdmin] = useState<any>(null);
+  type AdminSession = { token: string } | null;
+  type AdminInfo = { role: 'SUPER_ADMIN' | 'MODERATOR_ADMIN'; phone?: string; email?: string } | null;
+  const [session, setSession] = useState<AdminSession>(null);
+  const [admin, setAdmin] = useState<AdminInfo>(null);
   const [smsCode, setSmsCode] = useState('');
   const [emailCode, setEmailCode] = useState('');
   const [verificationStatus, setVerificationStatus] = useState({
@@ -59,7 +61,7 @@ export default function AdminModeratorLoginPage() {
       } else {
         setError(data.error || 'Ошибка входа');
       }
-    } catch (err) {
+    } catch {
       setError('Ошибка сети');
     } finally {
       setLoading(false);
@@ -82,7 +84,7 @@ export default function AdminModeratorLoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          token: session.token, 
+          token: session?.token || '', 
           code, 
           type 
         })
@@ -95,8 +97,8 @@ export default function AdminModeratorLoginPage() {
         
         if (data.fullyVerified) {
           // Полная верификация завершена
-          localStorage.setItem('adminToken', session.token);
-          localStorage.setItem('adminRole', admin.role);
+          localStorage.setItem('adminToken', session?.token || '');
+          localStorage.setItem('adminRole', admin?.role || 'MODERATOR_ADMIN');
           router.push('/admin-moderator/dashboard');
         } else {
           // Переходим к следующему этапу
@@ -107,7 +109,7 @@ export default function AdminModeratorLoginPage() {
       } else {
         setError(data.error || 'Неверный код');
       }
-    } catch (err) {
+    } catch {
       setError('Ошибка сети');
     } finally {
       setLoading(false);

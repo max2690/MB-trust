@@ -10,12 +10,23 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const screenshotFile = formData.get('screenshot') as File;
+    // Поддерживаем оба названия для совместимости
+    const screenshotFile = (formData.get('file') || formData.get('screenshot')) as File;
     const orderId = formData.get('orderId') as string;
     const executorId = formData.get('executorId') as string;
     
     if (!screenshotFile || !orderId || !executorId) {
       return NextResponse.json({ error: 'Файл, ID заказа или ID исполнителя не найдены' }, { status: 400 });
+    }
+
+    // Проверка типа файла
+    if (!screenshotFile.type.startsWith('image/')) {
+      return NextResponse.json({ error: 'Файл должен быть изображением' }, { status: 400 });
+    }
+
+    // Проверка размера (макс 10MB)
+    if (screenshotFile.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Размер файла не должен превышать 10MB' }, { status: 400 });
     }
 
     // Проверяем, что выполнение существует

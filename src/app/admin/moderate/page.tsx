@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Check, X, Users, DollarSign, Calendar } from 'lucide-react'
@@ -112,7 +113,7 @@ export default function ModerationPage() {
       <header className="border-b border-mb-gray/20 bg-mb-black/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => router.back()}>
+            <Button variant="outline" onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Назад
             </Button>
@@ -159,7 +160,7 @@ export default function ModerationPage() {
                         {execution.order.description}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary">На проверке</Badge>
+                    <Badge variant="outline">На проверке</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -225,9 +226,11 @@ export default function ModerationPage() {
                         <div>
                           <h4 className="font-semibold mb-2">Скриншот</h4>
                           <div className="bg-mb-black/50 rounded-lg p-4">
-                            <img 
-                              src={execution.screenshotUrl} 
-                              alt="Screenshot" 
+                            <Image
+                              src={execution.screenshotUrl}
+                              alt="Screenshot"
+                              width={640}
+                              height={360}
                               className="w-full max-w-md mx-auto rounded-lg"
                             />
                           </div>

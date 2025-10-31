@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
@@ -30,11 +31,9 @@ export function OrderCard({ order, onAccept }: OrderCardProps) {
       {/* Готовое изображение с QR кодом */}
       <div className="text-center mb-4">
         <h4 className="text-sm font-medium mb-2 text-white">Готовое изображение для размещения:</h4>
-        <img 
-          src={order.processedImageUrl} 
-          alt="Ready to post" 
-          className="mx-auto max-w-full h-48 object-cover rounded border-2 border-mb-turquoise" 
-        />
+        <div className="relative mx-auto h-48 w-full max-w-xl">
+          <Image src={order.processedImageUrl} alt="Ready to post" fill unoptimized />
+        </div>
         <p className="text-xs text-mb-gray mt-2">
           Просто скопируйте это изображение в вашу сторис
         </p>
@@ -43,7 +42,7 @@ export function OrderCard({ order, onAccept }: OrderCardProps) {
       {/* QR код отдельно */}
       <div className="text-center mb-4">
         <h4 className="text-sm font-medium mb-2 text-white">QR код отдельно:</h4>
-        <img src={order.qrCodeUrl} alt="QR Code" className="mx-auto w-24 h-24" />
+        <Image src={order.qrCodeUrl} alt="QR Code" width={96} height={96} unoptimized />
       </div>
       
       {/* Требования */}

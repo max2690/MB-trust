@@ -220,7 +220,7 @@ export default function AvailableOrdersPage() {
                         </div>
                         <div>
                           <p className="text-sm text-mb-gray">Оплата</p>
-                          <p className="font-semibold text-mb-gold">{(order.reward ?? (order as any).totalReward) ?? 0}₽</p>
+                          <p className="font-semibold text-mb-gold">{(order.reward ?? (order as OrderWithReward).totalReward) ?? 0}₽</p>
                         </div>
                       </div>
 

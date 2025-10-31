@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Button } from '../ui/button';
+import Image from 'next/image';
 import { Card } from '../ui/card';
 
 interface CustomerImageUploadProps {
@@ -82,10 +83,12 @@ export function CustomerImageUpload({ onImageProcessed }: CustomerImageUploadPro
         {originalImage && (
           <div className="text-center">
             <h4 className="text-sm font-medium mb-2 text-white">Ваше изображение:</h4>
-            <img 
+            <Image 
               src={URL.createObjectURL(originalImage)} 
               alt="Original" 
-              className="mx-auto max-w-full h-48 object-cover rounded" 
+              width={768}
+              height={192}
+              className="mx-auto h-48 w-auto object-cover rounded" 
             />
           </div>
         )}
@@ -94,10 +97,12 @@ export function CustomerImageUpload({ onImageProcessed }: CustomerImageUploadPro
         {processedImage && (
           <div className="text-center">
             <h4 className="text-sm font-medium mb-2 text-white">Готовое изображение с QR кодом:</h4>
-            <img 
+            <Image 
               src={processedImage} 
               alt="Processed" 
-              className="mx-auto max-w-full h-48 object-cover rounded border-2 border-mb-turquoise" 
+              width={768}
+              height={192}
+              className="mx-auto h-48 w-auto object-cover rounded border-2 border-mb-turquoise" 
             />
           </div>
         )}
@@ -106,9 +111,11 @@ export function CustomerImageUpload({ onImageProcessed }: CustomerImageUploadPro
         {qrCodeUrl && (
           <div className="text-center">
             <h4 className="text-sm font-medium mb-2 text-white">QR код для размещения:</h4>
-            <img 
+            <Image 
               src={qrCodeUrl} 
               alt="QR Code" 
+              width={128}
+              height={128}
               className="mx-auto w-32 h-32" 
             />
           </div>

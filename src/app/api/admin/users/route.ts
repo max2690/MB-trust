@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { UserRole, UserLevel } from '@prisma/client';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,11 +18,20 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Строим фильтры
-    const where: any = {};
+    const where: {
+      role?: UserRole;
+      region?: string;
+      level?: UserLevel;
+      OR?: Array<{
+        name?: { contains: string; mode: 'insensitive' };
+        email?: { contains: string; mode: 'insensitive' };
+        phone?: { contains: string; mode: 'insensitive' };
+      }>;
+    } = {};
     
-    if (role) where.role = role;
+    if (role) where.role = role as UserRole;
     if (region) where.region = region;
-    if (level) where.level = level;
+    if (level) where.level = level as UserLevel;
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
@@ -117,6 +127,40 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Ошибка обновления пользователя:', error);
     return NextResponse.json({ error: 'Ошибка обновления пользователя' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userIdFromQuery = searchParams.get('userId');
+    const body = await (async () => {
+      try { return await request.json(); } catch { return {}; }
+    })();
+    const userId = userIdFromQuery || (body as { userId?: string }).userId;
+
+    if (!userId) {
+      return NextResponse.json({ success: false, error: 'userId is required' }, { status: 400 });
+    }
+
+    try {
+      await prisma.user.delete({ where: { id: userId } });
+      return NextResponse.json({ success: true });
+    } catch (err) {
+      // Если есть внешние ключи и удаление невозможно, делаем мягкое удаление (не трогаем обязательные поля)
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          isBlocked: true,
+          name: 'Deleted User',
+          telegramUsername: null,
+        },
+      });
+      return NextResponse.json({ success: true, softDeleted: true });
+    }
+  } catch (error) {
+    console.error('Ошибка удаления пользователя:', error);
+    return NextResponse.json({ success: false, error: 'Ошибка удаления пользователя' }, { status: 500 });
   }
 }
 

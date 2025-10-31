@@ -29,6 +29,7 @@ export function ExecutorLimits({ executorId }: ExecutorLimitsProps) {
   const [limits, setLimits] = useState<LimitsData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchLimits();
   }, [executorId]);

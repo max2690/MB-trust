@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import HeroButtons from "@/components/HeroButtons";
+import HowItWorksTrigger from "@/components/HowItWorksTrigger";
+import TakeTaskButton from "@/components/TakeTaskButton";
+import CreateTaskButton from "@/components/CreateTaskButton";
 
 export const metadata: Metadata = {
   title: "MB-Trust — первый доверительный маркетинг",
@@ -53,10 +58,13 @@ export default function Landing() {
           <div className="flex flex-col gap-6 items-center text-center">
             {/* Логотип MB-Trust большими буквами */}
             <div className="flex gap-3 items-center mb-4">
-              <img 
+              <Image 
                 src="/logo/mb-trust-logo.png" 
                 alt="MB-Trust" 
+                width={180}
+                height={48}
                 className="w-auto h-12"
+                priority
               />
               <span className="text-5xl font-bold bg-gradient-to-r from-[#00E1B4] to-[#00E1B4] bg-clip-text text-transparent tracking-wider">
                 MB-TRUST
@@ -76,20 +84,7 @@ export default function Landing() {
               получая честные выплаты. Прозрачно. Легально. Эффективно.
             </p>
 
-            <div className="grid grid-cols-1 gap-3 mt-2 sm:grid-cols-2">
-              <Link
-                href="/auth/signup?role=executor"
-                className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] dark:text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition"
-              >
-                Я исполнитель
-              </Link>
-              <Link
-                href="/auth/signup?role=customer"
-                className="px-5 py-3 font-semibold rounded-xl border border-gray-300 transition border-white/15 dark:border-white/15 hover:border-white/30 dark:hover:border-white/30 hover:border-gray-400"
-              >
-                Я бизнес
-              </Link>
-            </div>
+            <HeroButtons />
           </div>
         </div>
       </section>
@@ -124,7 +119,7 @@ export default function Landing() {
       </section>
 
       {/* ДЛЯ ИСПОЛНИТЕЛЕЙ */}
-      <section className="border-t bg-white/5 border-white/5">
+      <section id="executor-section" className="border-t bg-white/5 border-white/5">
         <div className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
           <div className="grid gap-10 items-start lg:grid-cols-2">
             <div>
@@ -160,16 +155,12 @@ export default function Landing() {
               <div className="flex gap-3 mt-6">
                 <Link
                   href="/auth/signup?role=executor"
-                  className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] dark:text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition"
+                  className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition-all duration-200 ease-out"
                 >
                   Стать исполнителем
                 </Link>
-                <Link
-                  href="/dashboard/executor"
-                  className="px-5 py-3 font-semibold rounded-xl border border-gray-300 transition border-white/15 dark:border-white/15 hover:border-white/30 dark:hover:border-white/30 hover:border-gray-400"
-                >
-                  Как это работает?
-                </Link>
+                <HowItWorksTrigger />
+                <TakeTaskButton />
               </div>
             </div>
 
@@ -190,7 +181,7 @@ export default function Landing() {
       </section>
 
       {/* ДЛЯ БИЗНЕСА */}
-      <section className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
+      <section id="business-section" className="px-4 py-12 mx-auto max-w-6xl sm:px-6 sm:py-16">
         <div className="p-6 rounded-2xl border bg-white/5 border-white/10">
           <h3 className="mb-3 text-2xl font-semibold">Бизнесу</h3>
           <p className="mb-4 text-white/85">
@@ -229,16 +220,11 @@ export default function Landing() {
           <div className="flex gap-3 mt-6">
             <Link
               href="/auth/signup?role=customer"
-              className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] dark:text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition"
+              className="rounded-xl bg-[#00E1B4] text-[#0B0B0F] px-5 py-3 font-semibold hover:brightness-110 transition-all duration-200 ease-out"
             >
-              Разместить задание
+              Зарегистрировать бизнес
             </Link>
-            <Link
-              href="/customer/dashboard"
-              className="px-5 py-3 font-semibold rounded-xl border border-gray-300 transition border-white/15 dark:border-white/15 hover:border-white/30 dark:hover:border-white/30 hover:border-gray-400"
-            >
-              Руководство для бизнеса
-            </Link>
+            <CreateTaskButton />
           </div>
         </div>
       </section>

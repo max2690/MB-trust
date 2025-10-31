@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверяем лимиты по площадкам
-    const platformLimits = dailyLimit?.platformLimits as any || {};
+    const platformLimits = (dailyLimit?.platformLimits as Record<string, number> | undefined) || {};
     const currentPlatformExecutions = platformLimits[order.socialNetwork] || 0;
     const maxPlatformExecutions = 3; // Максимум 3 заказа на одну площадку в день
 
@@ -151,20 +151,43 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const executorId = searchParams.get('executorId');
     const orderId = searchParams.get('orderId');
+    const status = searchParams.get('status');
+    const me = searchParams.get('me');
+
+    const where: { executorId?: string; orderId?: string; status?: 'PENDING' | 'UPLOADED' | 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED' | 'COMPLETED' } = {};
+    
+    // Если me=1, используем текущего пользователя (TODO: брать из сессии)
+    if (me && me === '1') {
+      // Заглушка для тестирования
+      where.executorId = 'test-executor-1';
+    } else if (executorId) {
+      where.executorId = executorId;
+    }
+    
+    if (orderId) {
+      where.orderId = orderId;
+    }
+    
+    if (status) {
+      where.status = status as typeof where.status;
+    }
 
     let executions;
 
-    if (executorId) {
+    if (where.executorId || me === '1') {
       // Выполнения конкретного исполнителя
       executions = await prisma.execution.findMany({
-        where: { executorId },
+        where,
         include: {
           order: {
             select: {
+              id: true,
               title: true,
               description: true,
               reward: true,
-              status: true
+              status: true,
+              processedImageUrl: true,
+              qrCodeUrl: true
             }
           }
         },

@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// Select UI not needed here after simplification
+import Image from 'next/image';
 
 export default function ActivationPage() {
   const [userId, setUserId] = useState('');
@@ -124,17 +125,16 @@ export default function ActivationPage() {
               
               <div>
                 <Label>Платформа</Label>
-                <Select value={platform} onValueChange={setPlatform}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Выберите платформу" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="tiktok">TikTok</SelectItem>
-                    <SelectItem value="vk">VK</SelectItem>
-                    <SelectItem value="telegram">Telegram</SelectItem>
-                  </SelectContent>
-                </Select>
+                <select
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
+                  className="mt-1 flex h-12 w-full rounded-xl border border-mb-border bg-mb-input px-4 py-3 text-base text-mb-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mb-turquoise focus-visible:ring-offset-2 focus-visible:ring-offset-mb-black"
+                >
+                  <option value="instagram">Instagram</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="vk">VK</option>
+                  <option value="telegram">Telegram</option>
+                </select>
               </div>
               
               <Button 
@@ -156,11 +156,13 @@ export default function ActivationPage() {
             </CardHeader>
             <CardContent>
               <div className="text-center">
-                <img 
-                  src={qrCode} 
-                  alt="QR Code" 
+                <Image 
+                  src={qrCode}
+                  alt="QR Code"
+                  width={300}
+                  height={300}
                   className="mx-auto mb-4 border rounded-lg"
-                  style={{ maxWidth: '300px' }}
+                  priority
                 />
                 <p className="text-sm text-gray-600 mb-4">
                   Пользователь должен разместить этот QR-код в своей сторис
@@ -206,12 +208,13 @@ export default function ActivationPage() {
               
               {screenshot && (
                 <div className="space-y-4">
-                  <div>
-                    <img 
+                  <div className="mx-auto" style={{ maxWidth: '300px' }}>
+                    <Image 
                       src={URL.createObjectURL(screenshot)} 
                       alt="Screenshot preview" 
-                      className="max-w-full h-auto rounded-lg border"
-                      style={{ maxHeight: '300px' }}
+                      width={300}
+                      height={300}
+                      className="w-full h-auto rounded-lg border"
                     />
                   </div>
                   
@@ -250,16 +253,21 @@ export default function ActivationPage() {
                 {result.message}
               </p>
               
-              {result.details && (
-                <div className="mt-4 text-sm">
-                  <div className="font-semibold mb-2">Детали проверки:</div>
-                  <div className="space-y-1">
-                    <div>QR-код обнаружен: {result.details.qrCodeDetected ? '✅' : '❌'}</div>
-                    <div>Соответствие платформе: {result.details.platformMatch ? '✅' : '❌'}</div>
-                    <div>Качество изображения: {result.details.qualityScore?.toFixed(2)}</div>
+              {(() => {
+                const details = (result as unknown as {
+                  details?: { qrCodeDetected: boolean; platformMatch: boolean; qualityScore?: number }
+                }).details;
+                return details ? (
+                  <div className="mt-4 text-sm">
+                    <div className="font-semibold mb-2">Детали проверки:</div>
+                    <div className="space-y-1">
+                      <div>QR-код обнаружен: {details.qrCodeDetected ? '✅' : '❌'}</div>
+                      <div>Соответствие платформе: {details.platformMatch ? '✅' : '❌'}</div>
+                      <div>Качество изображения: {details.qualityScore?.toFixed(2)}</div>
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : null;
+              })()}
             </div>
             
             <div className="mt-4">

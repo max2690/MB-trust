@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     const currentExecutions = dailyLimit?.executionsCount || 0;
     const maxExecutions = levelLimits[executor.level];
-    const platformLimits = dailyLimit?.platformLimits as any || {};
+    const platformLimits: Record<string, number> = (dailyLimit?.platformLimits as unknown as Record<string, number>) || {};
 
     // Проверяем, сколько дней работает исполнитель
     const daysSinceRegistration = Math.floor(

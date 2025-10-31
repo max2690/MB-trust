@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || 'PENDING_REVIEW'
 
     const executions = await prisma.execution.findMany({
-      where: { status: status as any },
+      where: { status: status as 'PENDING' | 'UPLOADED' | 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED' | 'COMPLETED' },
       include: {
         order: {
           select: { title: true, description: true, reward: true }

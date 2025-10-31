@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,7 +22,7 @@ interface TrustLevel {
 export default function TrustLevelsPage() {
   const [trustLevels, setTrustLevels] = useState<TrustLevel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingLevel, setEditingLevel] = useState<TrustLevel | null>(null);
+  const [editingLevel] = useState<TrustLevel | null>(null);
 
   useEffect(() => {
     fetchTrustLevels();
@@ -44,7 +43,8 @@ export default function TrustLevelsPage() {
     }
   };
 
-  const updateLevel = async (levelId: string, field: string, value: any) => {
+  type UpdatableField = keyof Pick<TrustLevel, 'minPricePerStory' | 'commissionRate' | 'minExecutions' | 'minRating' | 'minDaysActive' | 'adminNotes' | 'isActive'>;
+  const updateLevel = async (levelId: string, field: UpdatableField, value: string | number | boolean) => {
     try {
       const response = await fetch(`/api/admin/trust-levels/${levelId}`, {
         method: 'PUT',

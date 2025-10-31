@@ -90,7 +90,11 @@ export async function POST(request: NextRequest) {
 }
 
 // Обработка сторис для конкретного заказа
-async function processStoryForOrder(storyData: any, order: any, verification: any) {
+type StoryData = { photo?: { file_id?: string } } & Record<string, unknown>;
+type OrderLite = { id: string; quantity: number; executions: Array<{ id: string }> };
+type VerificationLite = { id: string };
+
+async function processStoryForOrder(storyData: StoryData, order: OrderLite, verification: VerificationLite) {
   try {
     console.log(`🔍 Анализируем сторис для заказа ${order.id}`);
 
@@ -163,7 +167,7 @@ async function processStoryForOrder(storyData: any, order: any, verification: an
 }
 
 // Заглушка для AI анализа сторис
-async function analyzeStoryWithAI(storyData: any, order: any) {
+async function analyzeStoryWithAI(storyData: StoryData, order: { id: string }) {
   // В реальности здесь будет AI анализ изображения
   // Пока возвращаем заглушку с высокой вероятностью одобрения
   

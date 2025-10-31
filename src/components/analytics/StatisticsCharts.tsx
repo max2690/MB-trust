@@ -44,6 +44,7 @@ interface StatisticsChartsProps {
 }
 
 const COLORS = ['#00D4FF', '#00E1B4', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+type PieLbl = { x?: number; y?: number; name?: string; value?: number; percent?: number };
 
 export function StatisticsCharts({ data }: StatisticsChartsProps) {
   // Подготавливаем данные для диаграмм
@@ -148,7 +149,7 @@ export function StatisticsCharts({ data }: StatisticsChartsProps) {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={(props: PieLbl) => `${props.name ?? ''} ${(((props.percent ?? 0) * 100).toFixed(0))}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"

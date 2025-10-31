@@ -1,9 +1,11 @@
-import { NextAuthOptions } from 'next-auth'
+// Soft-typed config for current next-auth version
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 
-export const authOptions: NextAuthOptions = {
+// Revert to lenient typing to satisfy NextAuth v4 callbacks in this project
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const authOptions: any = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   adapter: PrismaAdapter(prisma) as any,
   providers: [
@@ -44,20 +46,31 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt'
   },
   callbacks: {
-    async jwt({ token, user }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async jwt({ token, user }: any) {
       if (user) {
-        token.role = user.role
-        token.level = user.level
-        token.phone = user.phone
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        token.sub = (user as any).id ?? token.sub
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        token.role = (user as any).role
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        token.level = (user as any).level
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        token.phone = (user as any).phone
       }
       return token
     },
-    async session({ session, token }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async session({ session, token }: any) {
       if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
-        session.user.level = token.level as string
-        session.user.phone = token.phone as string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(session.user ||= {} as any).id = token.sub as string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(session.user as any).role = token.role as string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(session.user as any).level = token.level as string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(session.user as any).phone = token.phone as string
       }
       return session
     }

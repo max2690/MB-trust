@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +10,52 @@ import { OrderCard } from '@/components/business/OrderCard'
 import { BalanceCard } from '@/components/payment/BalanceCard'
 import { ArrowLeft, Plus, Target, DollarSign, Users, TrendingUp, Settings, LogOut } from 'lucide-react'
 
+interface Order {
+  id: string
+  title: string
+  description: string
+  targetAudience: string
+  reward: number
+  processedImageUrl?: string
+  qrCodeUrl?: string
+  deadline?: string
+  customer?: {
+    name: string
+    level: string
+  }
+}
+
 export default function CustomerDashboardPage() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch('/api/orders?role=customer&userId=temp-customer')
+      const result = await response.json()
+      
+      if (result.success) {
+        setOrders(result.orders || [])
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-mb-black flex items-center justify-center">
+        <div className="text-white text-xl">Загрузка...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-mb-black text-mb-white">
       {/* Header */}
@@ -120,22 +166,35 @@ export default function CustomerDashboardPage() {
         {/* Recent Orders */}
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">Последние задания</h2>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <OrderCard key={i} order={{
-                id: String(i),
-                title: `Промо для интернет-магазина #${i}`,
-                description: 'Сторис с промокодом для интернет-магазина',
-                targetAudience: '18-34',
-                reward: 500,
-                processedImageUrl: '',
-                qrCodeUrl: '',
-                deadline: '',
-                customer: { name: 'Вы', level: 'VERIFIED' }
-              } as any} onAccept={() => {}} compact />
-            ))}
-          </div>
-  </div>
+          {orders.length === 0 ? (
+            <Card className="border-0 shadow-lg text-center py-12">
+              <CardContent>
+                <Target className="h-16 w-16 text-mb-gray mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">У вас пока нет заданий</h3>
+                <p className="text-mb-gray mb-6">
+                  Создайте первое задание, чтобы начать работу с исполнителями.
+                </p>
+                <Link href="/dashboard/customer/create-order">
+                  <Button>
+                    Создать задание
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {orders.slice(0, 3).map((order) => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order} 
+                  onAccept={() => {}} 
+                  compact 
+                  hideAcceptButton={true}
+                />
+              ))}
+            </div>
+          )}
+        </div>
         
   {/* Balance */}
         <BalanceCard 

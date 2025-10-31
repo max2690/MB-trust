@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: result?.success || false,
       message: result?.success ? 'Уведомление отправлено успешно' : 'Ошибка отправки',
-      error: (result as any)?.error || undefined,
-      method: (result as any)?.method || undefined,
-      cost: (result as any)?.cost || undefined
+      error: result && 'error' in result ? (result as { error?: string }).error : undefined,
+      method: result && 'method' in result ? (result as { method?: string }).method : undefined,
+      cost: result && 'cost' in result ? (result as { cost?: number }).cost : undefined
     });
 
   } catch (error) {

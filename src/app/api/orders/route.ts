@@ -39,6 +39,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Не все поля заполнены' }, { status: 400 });
     }
 
+    // Разрешаем создавать заказы только заказчикам
+    if (customerId) {
+      const customer = await prisma.user.findUnique({ where: { id: customerId }, select: { role: true } });
+      if (!customer || customer.role !== 'CUSTOMER') {
+        return NextResponse.json({ error: 'Создавать заказы могут только заказчики' }, { status: 403 });
+      }
+    }
+
     // Генерируем изображения если не предоставлены
     const finalProcessedImageUrl = processedImageUrl || `https://via.placeholder.com/400x400/3B82F6/FFFFFF?text=${encodeURIComponent(title)}`;
     
@@ -161,11 +169,11 @@ export async function GET(request: NextRequest) {
       }) : null;
 
       // Формируем условия для геофильтрации
-      const geoFilters: any[] = [];
+      const geoFilters: Array<{ OR: Array<{ targetCountry?: string | null; targetRegion?: string | null; targetCity?: string | null }> }> = [];
       
       if (user) {
         // Поиск заказов, где целевая геолокация включает пользователя
-        const conditions: any[] = [
+        const conditions: Array<{ targetCountry?: string | null; targetRegion?: string | null; targetCity?: string | null }> = [
           // Вся страна
           { targetCountry: user.country, targetRegion: null, targetCity: null },
           // Регион пользователя
@@ -193,7 +201,18 @@ export async function GET(request: NextRequest) {
           status: 'PENDING',
           ...(geoFilters.length > 0 ? { AND: geoFilters } : {})
         },
-        include: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          reward: true,
+          socialNetwork: true,
+          targetCountry: true,
+          targetRegion: true,
+          targetCity: true,
+          processedImageUrl: true,
+          qrCodeUrl: true,
+          deadline: true,
           customer: {
             select: {
               name: true,

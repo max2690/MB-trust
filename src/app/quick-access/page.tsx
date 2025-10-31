@@ -56,7 +56,7 @@ export default function QuickAccessPage() {
                   </div>
                 </Button>
               </Link>
-              <Link href="/executor/dashboard" passHref>
+              <Link href="/executor/available" passHref>
                 <Button className="w-full h-16 text-lg border border-mb-turquoise/30 hover:border-mb-turquoise/70 shadow-lg shadow-mb-turquoise/10 hover:shadow-glow" variant="outline">
                   <div className="text-center">
                     <div className="text-2xl mb-1">🛠️</div>
@@ -92,7 +92,7 @@ export default function QuickAccessPage() {
 
           <div className="text-center pt-4 border-t border-gray-700">
             <p className="text-sm text-mb-gray">
-              ⚠️ Эти "костыли" активны только в режиме разработки
+              ⚠️ Эти &quot;костыли&quot; активны только в режиме разработки
             </p>
             <p className="text-xs text-mb-gray mt-1">
               В продакшене будет работать обычная авторизация

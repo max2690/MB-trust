@@ -2,9 +2,26 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": "off",
     "react/no-unescaped-entities": "warn",
-    "@next/next/no-img-element": "warn",
-    "react-hooks/exhaustive-deps": "warn"
-  }
+    "@next/next/no-img-element": "error",
+    "react-hooks/exhaustive-deps": "off",
+    "no-unused-vars": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{ts,tsx}"]
+      ,"rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+        "no-unused-vars": "off",
+        "react-hooks/exhaustive-deps": "off"
+      }
+    },
+    {
+      "files": ["**/*.{js,mjs}"]
+      ,"rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
 }

@@ -19,7 +19,7 @@ interface TestOrder {
   totalReward: number;
   status: string;
   createdAt: string;
-  executions: any[];
+  executions: Array<{ id: string }>;
 }
 
 export default function TestPage() {

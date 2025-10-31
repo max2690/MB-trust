@@ -125,7 +125,13 @@ export default function OrdersPage() {
         ) : (
           <div className="grid gap-6">
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} onAccept={() => { /* no-op in list view */ }} compact />
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                onAccept={() => { /* no-op in list view */ }} 
+                compact 
+                hideAcceptButton={true}
+              />
             ))}
           </div>
         )}

@@ -297,7 +297,7 @@ export default function TelegramVerificationPage() {
       )}
 
       {error && (
-        <Alert variant="destructive" className="mt-4">
+        <Alert className="mt-4">
           <XCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>

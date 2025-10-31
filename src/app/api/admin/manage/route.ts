@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const role = searchParams.get('role');
 
-    const where = role ? { role: role as any } : {};
+    const where: { role?: 'SUPER_ADMIN' | 'MODERATOR_ADMIN' } = role ? { role: role as 'SUPER_ADMIN' | 'MODERATOR_ADMIN' } : {};
 
     const admins = await prisma.admin.findMany({
       where,
@@ -123,7 +123,7 @@ export async function PUT(request: NextRequest) {
       }, { status: 403 });
     }
 
-    const updateData: any = {};
+    const updateData: { isActive?: boolean; permissions?: string } = {};
     if (isActive !== undefined) updateData.isActive = isActive;
     if (permissions) updateData.permissions = JSON.stringify(permissions);
 

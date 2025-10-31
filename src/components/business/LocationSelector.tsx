@@ -16,6 +16,8 @@ interface LocationSelectorProps {
   initialLocation?: Location;
 }
 
+type Suggestion = { city?: string; region?: string; value?: string };
+
 export function LocationSelector({ onLocationChange, initialLocation }: LocationSelectorProps) {
   const [scope, setScope] = useState<'country' | 'region' | 'city'>('country');
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -114,7 +116,7 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
   };
 
   const updateLocation = (country: string | null, region: string | null, city: string | null, currentScope: 'country' | 'region' | 'city') => {
-    let finalCountry = country || 'Россия';
+    const finalCountry = country || 'Россия';
     let finalRegion = null;
     let finalCity = null;
 
@@ -151,7 +153,6 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
       'Уфа': 'Республика Башкортостан',
       'Омск': 'Омская область',
       'Красноярск': 'Красноярский край',
-      'Воронеж': 'Воронежская область',
       'Пермь': 'Пермский край',
       'Волгоград': 'Волгоградская область',
       'Хабаровск': 'Хабаровский край',
@@ -183,7 +184,7 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
       try {
         const response = await fetch(`/api/location/autocomplete?q=${encodeURIComponent(value)}&type=city`);
         const data = await response.json();
-        setCitySuggestions(data.suggestions?.map((s: any) => s.city || s.value) || []);
+        setCitySuggestions(data.suggestions?.map((s: Suggestion) => s.city || s.value) || []);
       } catch (error) {
         console.error('Ошибка автодополнения:', error);
       } finally {
@@ -202,7 +203,7 @@ export function LocationSelector({ onLocationChange, initialLocation }: Location
       try {
         const response = await fetch(`/api/location/autocomplete?q=${encodeURIComponent(value)}&type=region`);
         const data = await response.json();
-        setRegionSuggestions(data.suggestions?.map((s: any) => s.region || s.value) || []);
+        setRegionSuggestions(data.suggestions?.map((s: Suggestion) => s.region || s.value) || []);
       } catch (error) {
         console.error('Ошибка автодополнения регионов:', error);
       }

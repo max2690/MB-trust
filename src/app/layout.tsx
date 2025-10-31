@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
+import AppSessionProvider from "@/components/SessionProvider";
 
-// Инициализация Telegram бота
-if (process.env.NODE_ENV === 'development') {
-  import('@/lib/telegram-init');
+// Инициализация Telegram бота (только на сервере)
+if (typeof window === 'undefined') {
+  import('@/lib/telegram-init-server').catch(err => {
+    console.error('Ошибка загрузки Telegram бота:', err);
+  });
 }
 
 const manrope = Manrope({
@@ -131,12 +134,14 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground">
-        <div className="relative flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-        </div>
+        <AppSessionProvider>
+          <div className="relative flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+          </div>
+        </AppSessionProvider>
       </body>
     </html>
   );

@@ -5,6 +5,13 @@ import { CreateOrderForm } from '@/components/business/CreateOrderForm';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
+
+interface ExecutionItem {
+  status: string;
+  reward: number;
+  executor?: { name?: string } | null;
+}
 
 interface Order {
   id: string;
@@ -16,7 +23,7 @@ interface Order {
   processedImageUrl: string;
   qrCodeUrl: string;
   createdAt: string;
-  executions: any[];
+  executions: ExecutionItem[];
 }
 
 export default function CustomerDashboard() {
@@ -92,7 +99,7 @@ export default function CustomerDashboard() {
     }
   };
 
-  const handleCreateOrder = async (orderData: any) => {
+  const handleCreateOrder = async (orderData: Record<string, unknown>) => {
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -168,7 +175,7 @@ export default function CustomerDashboard() {
 
         {showCreateForm && (
           <div className="mb-8">
-            <CreateOrderForm onSubmit={handleCreateOrder} />
+            <CreateOrderForm onSubmit={(d) => { void handleCreateOrder(d as unknown as Record<string, unknown>); }} />
           </div>
         )}
 
@@ -273,18 +280,22 @@ export default function CustomerDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="text-center">
                       <h4 className="text-sm font-medium mb-2 text-white">Готовое изображение:</h4>
-                      <img 
-                        src={order.processedImageUrl} 
-                        alt="Processed" 
-                        className="mx-auto max-w-full h-32 object-cover rounded border border-mb-turquoise" 
+                      <Image 
+                        src={order.processedImageUrl}
+                        alt="Processed"
+                        width={320}
+                        height={128}
+                        className="mx-auto h-32 object-cover rounded border border-mb-turquoise"
                       />
                     </div>
                     <div className="text-center">
                       <h4 className="text-sm font-medium mb-2 text-white">QR код:</h4>
-                      <img 
-                        src={order.qrCodeUrl} 
-                        alt="QR Code" 
-                        className="mx-auto w-24 h-24" 
+                      <Image 
+                        src={order.qrCodeUrl}
+                        alt="QR Code"
+                        width={96}
+                        height={96}
+                        className="mx-auto"
                       />
                     </div>
                   </div>
@@ -294,7 +305,7 @@ export default function CustomerDashboard() {
                     <div className="mt-4">
                       <h4 className="text-sm font-medium mb-2 text-white">Выполнения:</h4>
                       <div className="space-y-2">
-                        {order.executions.map((execution: any, index: number) => (
+                        {order.executions.map((execution, index: number) => (
                           <div key={index} className="flex items-center justify-between p-3 bg-mb-input rounded">
                             <div>
                               <p className="text-white text-sm">Исполнитель: {execution.executor?.name || 'Неизвестно'}</p>

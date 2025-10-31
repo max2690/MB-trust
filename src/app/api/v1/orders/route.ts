@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateApiKey, checkPermission, ApiRequest } from '@/lib/api-middleware';
 import { prisma } from '@/lib/prisma';
+import { OrderStatus, SocialNetwork } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -26,9 +28,9 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
     
-    const where: any = {};
-    if (status) where.status = status;
-    if (socialNetwork) where.socialNetwork = socialNetwork;
+    const where: { status?: OrderStatus; socialNetwork?: SocialNetwork } = {};
+    if (status) where.status = status as OrderStatus;
+    if (socialNetwork) where.socialNetwork = socialNetwork as SocialNetwork;
     
     // Логика получения заказов
     const orders = await prisma.order.findMany({
@@ -103,17 +105,30 @@ export async function POST(request: NextRequest) {
     }
     
     // Создаем заказ
+    const budgetNum = Number(reward);
+    const pricePerStory = Math.ceil(budgetNum / 10);
+    const platformCommission = Math.round(budgetNum * 0.10);
+    const executorEarnings = budgetNum - platformCommission;
+
     const order = await prisma.order.create({
       data: {
         customerId,
         title,
         description: description || '',
-        socialNetwork,
+        socialNetwork: socialNetwork as SocialNetwork,
         targetAudience,
         deadline: new Date(deadline),
-        reward: parseFloat(reward),
+        reward: Number(reward),
+        budget: budgetNum,
+        pricePerStory,
+        platformCommission,
+        executorEarnings,
+        platformEarnings: platformCommission,
+        region: targetRegion || 'Москва',
+        qrCode: randomUUID(),
+        qrCodeExpiry: new Date(Date.now() + 15 * 60 * 1000),
         qrCodeUrl: qrCodeUrl || '',
-        status: 'ACTIVE',
+        status: OrderStatus.PENDING,
         targetCountry: targetCountry || 'Россия',
         targetRegion: targetRegion || null,
         targetCity: targetCity || null

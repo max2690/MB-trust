@@ -1,12 +1,8 @@
 import { redirect } from 'next/navigation'
 
 interface TrackPageProps {
-  params: {
-    qrCodeId: string
-  }
-  searchParams: {
-    url?: string
-  }
+  params: Promise<{ qrCodeId: string }>
+  searchParams: Promise<{ url?: string }>
 }
 
 export default function TrackPage({ params, searchParams }: TrackPageProps) {

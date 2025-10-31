@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { UserRole } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
         email,
         country,
         region,
-        role,
+        role: role as UserRole,
         passwordHash: hashedPassword,
         level: 'NOVICE',
         balance: 0,
@@ -61,13 +62,48 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const role = searchParams.get('role')
-    const level = searchParams.get('level')
+    const role = searchParams.get('role') as UserRole | null
+    const userId = searchParams.get('userId')
+    const telegramId = searchParams.get('telegramId')
 
-    const where: any = {}
+    const where: { role?: UserRole; id?: string; telegramId?: string } = {}
     if (role) where.role = role
-    if (level) where.level = level
+    if (userId) where.id = userId
+    if (telegramId) where.telegramId = telegramId
 
+    // Если указан userId или telegramId, возвращаем одного пользователя
+    if (userId || telegramId) {
+      const user = await prisma.user.findUnique({
+        where: userId ? { id: userId } : { telegramId: telegramId! },
+        select: {
+          id: true,
+          name: true,
+          phone: true,
+          email: true,
+          country: true,
+          region: true,
+          role: true,
+          level: true,
+          balance: true,
+          isVerified: true,
+          isBlocked: true,
+          createdAt: true,
+          telegramId: true,
+          telegramUsername: true
+        }
+      })
+
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: 'User not found' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json({ success: true, user })
+    }
+
+    // Иначе возвращаем список пользователей
     const users = await prisma.user.findMany({
       where,
       select: {

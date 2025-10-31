@@ -12,6 +12,9 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.AUTH_MODE === 'telegram-only') {
+      return NextResponse.json({ error: 'Disabled in test mode' }, { status: 503 })
+    }
     const body = await request.json();
     const { screenshotId, orderId } = body;
 
@@ -88,7 +91,7 @@ export async function POST(request: NextRequest) {
 }
 
 // AI верификация через OpenAI Vision API
-async function performAIVerification(imageUrl: string, order: any) {
+async function performAIVerification(imageUrl: string, order: { description: string }) {
   try {
     // Если OpenAI API ключ не настроен, используем заглушку
     if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {

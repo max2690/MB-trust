@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Необходимо указать orderId или executorId' }, { status: 400 });
     }
 
-    const where: any = {};
+    const where: { orderId?: string; executorId?: string } = {};
     if (orderId) where.orderId = orderId;
     if (executorId) where.executorId = executorId;
 

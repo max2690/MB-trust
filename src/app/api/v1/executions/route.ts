@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateApiKey, checkPermission, ApiRequest } from '@/lib/api-middleware';
 import { prisma } from '@/lib/prisma';
 import { nanoid } from 'nanoid';
+import { ExecutionStatus, OrderStatus, UserRole } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -26,10 +27,10 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
     
-    const where: any = {};
+    const where: { executorId?: string; orderId?: string; status?: ExecutionStatus } = {};
     if (executorId) where.executorId = executorId;
     if (orderId) where.orderId = orderId;
-    if (status) where.status = status;
+    if (status) where.status = status as ExecutionStatus;
     
     const executions = await prisma.execution.findMany({
       where,
@@ -100,7 +101,8 @@ export async function POST(request: NextRequest) {
       where: { id: orderId }
     });
     
-    if (!order || order.status !== 'ACTIVE') {
+    // В системе нет статуса ACTIVE, считаем активным заказ в статусе PENDING
+    if (!order || order.status !== OrderStatus.PENDING) {
       return NextResponse.json(
         { error: 'Order not found or not active' },
         { status: 404 }
@@ -112,7 +114,7 @@ export async function POST(request: NextRequest) {
       where: { id: executorId }
     });
     
-    if (!executor || executor.role !== 'EXECUTOR') {
+    if (!executor || executor.role !== UserRole.EXECUTOR) {
       return NextResponse.json(
         { error: 'Executor not found' },
         { status: 404 }
@@ -156,7 +158,7 @@ export async function POST(request: NextRequest) {
         executorId,
         screenshotUrl: screenshotUrl || '',
         notes: notes || '',
-        status: 'PENDING',
+        status: ExecutionStatus.PENDING,
         reward: order.reward
       }
     });
@@ -164,7 +166,7 @@ export async function POST(request: NextRequest) {
     // Обновляем статус заказа
     await prisma.order.update({
       where: { id: orderId },
-      data: { status: 'IN_PROGRESS' }
+      data: { status: OrderStatus.IN_PROGRESS }
     });
     
     // Обновляем дневные лимиты

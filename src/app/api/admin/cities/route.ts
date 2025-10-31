@@ -15,7 +15,12 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Строим фильтры
-    const where: any = { isActive: true };
+    const where: {
+      isActive: boolean;
+      region?: string | { contains: string; mode: 'insensitive' };
+      name?: { contains: string; mode: 'insensitive' };
+      OR?: Array<{ name: { contains: string; mode: 'insensitive' } } | { region: { contains: string; mode: 'insensitive' } }>;
+    } = { isActive: true };
     
     if (region) where.region = region;
     if (search) {

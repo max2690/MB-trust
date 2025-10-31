@@ -43,9 +43,10 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    type DaDataAddress = { value: string; data: { city?: string; region_with_type?: string; area_with_type?: string; country?: string } };
     
     // Форматируем ответ DaData
-    const suggestions = data.suggestions.map((s: any) => ({
+    const suggestions = (data.suggestions as DaDataAddress[]).map((s) => ({
       value: s.value,
       city: s.data.city || s.data.region_with_type,
       region: s.data.region_with_type || s.data.area_with_type,

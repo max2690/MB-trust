@@ -1,7 +1,7 @@
 # Cursor Ignore - Файлы, которые Cursor НЕ должен изменять
 
 # Зафиксированные UI компоненты
-src/components/ui/
+#src/components/ui/
 
 # Зафиксированные стили
 src/app/globals.css

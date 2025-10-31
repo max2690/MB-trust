@@ -23,8 +23,26 @@ interface CalculationResult {
   refundDeadline: string;
 }
 
+interface AdvancedOrderData {
+  title: string;
+  description: string;
+  targetAudience: string;
+  campaignType: string;
+  executionDays: number;
+  autoDistribution: boolean;
+  refundOnFailure: boolean;
+  platforms: PlatformConfig[];
+  totalCost: number;
+  totalQuantity: number;
+  dailyDistribution: Record<string, Record<string, number>>;
+  refundDeadline: string;
+  processedImageUrl: string;
+  qrCodeUrl: string;
+  orderId: string;
+}
+
 interface AdvancedOrderFormProps {
-  onSubmit: (orderData: any) => void;
+  onSubmit: (orderData: AdvancedOrderData) => void;
 }
 
 export function AdvancedOrderForm({ onSubmit }: AdvancedOrderFormProps) {
@@ -49,6 +67,7 @@ export function AdvancedOrderForm({ onSubmit }: AdvancedOrderFormProps) {
   const [orderId, setOrderId] = useState<string | null>(null);
 
   // Рассчитываем стоимость при изменении параметров
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (platforms.length > 0 && platforms.some(p => p.quantity > 0)) {
       calculateCost();
@@ -90,7 +109,7 @@ export function AdvancedOrderForm({ onSubmit }: AdvancedOrderFormProps) {
     }
   };
 
-  const updatePlatform = (index: number, field: keyof PlatformConfig, value: any) => {
+  const updatePlatform = (index: number, field: keyof PlatformConfig, value: string | number) => {
     const updated = [...platforms];
     updated[index] = { ...updated[index], [field]: value };
     setPlatforms(updated);

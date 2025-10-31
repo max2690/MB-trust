@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Container from '@/components/ui/container';
-import { OrderCard } from '@/components/business/OrderCard';
+// removed unused OrderCard import
 
 interface User {
   id: string;
@@ -44,7 +44,8 @@ export default function AdminModeratorDashboard() {
     console.log('🔥 DEV MODE: Прямой доступ к модератор панели без авторизации');
   }
 
-  const [admin, setAdmin] = useState<any>(null);
+  type AdminSession = { id: string; login: string; name: string; role: 'MODERATOR_ADMIN'; phone?: string; email?: string; isActive?: boolean } | null;
+  const [admin, setAdmin] = useState<AdminSession>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [platforms, setPlatforms] = useState<PlatformSetting[]>([]);
   const [commissions, setCommissions] = useState<CommissionSetting[]>([]);
@@ -68,6 +69,7 @@ export default function AdminModeratorDashboard() {
   useEffect(() => {
     checkAuth();
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuth = async () => {
@@ -124,7 +126,7 @@ export default function AdminModeratorDashboard() {
       if (usersData.success) setUsers(usersData.users);
       if (platformsData.success) setPlatforms(platformsData.platforms);
       if (commissionsData.success) setCommissions(commissionsData.commissions);
-    } catch (err) {
+    } catch {
       setError('Ошибка загрузки данных');
     } finally {
       setLoading(false);
@@ -145,7 +147,7 @@ export default function AdminModeratorDashboard() {
       } else {
         setError(data.error || 'Ошибка обновления цены');
       }
-    } catch (err) {
+    } catch {
       setError('Ошибка сети');
     }
   };
@@ -201,7 +203,7 @@ export default function AdminModeratorDashboard() {
       } else {
         setError(data.error || 'Ошибка создания модератора');
       }
-    } catch (err) {
+    } catch {
       setError('Ошибка сети');
     } finally {
       setLoading(false);
@@ -231,7 +233,7 @@ export default function AdminModeratorDashboard() {
         const error = await response.json();
         setError(error.error || 'Ошибка блокировки');
       }
-    } catch (error) {
+    } catch {
       setError('Ошибка блокировки пользователей');
     }
   };
@@ -448,7 +450,7 @@ export default function AdminModeratorDashboard() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Badge variant={platform.isActive ? 'default' : 'secondary'}>
+                    <Badge variant={platform.isActive ? 'default' : 'outline'}>
                       {platform.isActive ? 'Активна' : 'Неактивна'}
                     </Badge>
                   </TableCell>
@@ -555,12 +557,12 @@ export default function AdminModeratorDashboard() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{user.level}</Badge>
+                    <Badge variant="outline">{user.level}</Badge>
                   </TableCell>
                   <TableCell>{user.balance}₽</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Badge variant={user.isVerified ? 'default' : 'secondary'}>
+                      <Badge variant={user.isVerified ? 'default' : 'outline'}>
                         {user.isVerified ? 'Верифицирован' : 'Не верифицирован'}
                       </Badge>
                       {user.isBlocked && (
